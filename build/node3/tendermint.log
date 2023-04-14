@@ -1,0 +1,64 @@
+I[2023-04-13|10:10:58.488] Version info                                 module=main software=v0.34.0 block=11 p2p=8
+I[2023-04-13|10:10:58.554] Starting Node service                        module=main impl=Node
+I[2023-04-13|10:10:58.568] Starting StateSync service                   module=statesync impl=StateSync
+E[2023-04-13|10:10:58.583] dialing failed (attempts: 1): dial tcp 192.167.10.2:26656: connect: connection refused module=pex addr=7e80d23025b485d2d00306dc77e466de414339c8@192.167.10.2:26656
+I[2023-04-13|10:10:58.611] Started node                                 module=main nodeInfo="{ProtocolVersion:{P2P:8 Block:11 App:0} DefaultNodeID:5bd6ecea9c240fa2ce031ac08fc9359ee6d47242 ListenAddr:tcp://0.0.0.0:26656 Network:chain-H5iqVd Version:v0.34.0 Channels:40202122233038606100 Moniker:04311CAD88587E56 Other:{TxIndex:on RPCAddress:tcp://0.0.0.0:26657}}"
+E[2023-04-13|10:10:58.649] Error stopping connection                    module=p2p peer=ceae5c4eab7da9c1e0704287cefacaf487d2441a@192.167.10.4:60210 err="already stopped"
+E[2023-04-13|10:10:58.649] Stopping peer for error                      module=p2p peer="Peer{MConn{192.167.10.4:26656} ceae5c4eab7da9c1e0704287cefacaf487d2441a out}" err=EOF
+I[2023-04-13|10:11:00.139] Executed block                               module=state height=50 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:00.141] Committed state                              module=state height=50 txs=0 appHash=
+I[2023-04-13|10:11:01.594] Executed block                               module=state height=51 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:01.596] Committed state                              module=state height=51 txs=0 appHash=
+I[2023-04-13|10:11:02.912] Executed block                               module=state height=52 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:02.914] Committed state                              module=state height=52 txs=0 appHash=
+I[2023-04-13|10:11:04.279] Executed block                               module=state height=53 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:04.281] Committed state                              module=state height=53 txs=0 appHash=
+I[2023-04-13|10:11:05.732] Executed block                               module=state height=54 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:05.733] Committed state                              module=state height=54 txs=0 appHash=
+I[2023-04-13|10:11:07.041] Executed block                               module=state height=55 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:07.042] Committed state                              module=state height=55 txs=0 appHash=
+I[2023-04-13|10:11:08.599] Executed block                               module=state height=56 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:08.600] Committed state                              module=state height=56 txs=0 appHash=
+I[2023-04-13|10:11:09.948] Executed block                               module=state height=57 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:09.950] Committed state                              module=state height=57 txs=0 appHash=
+I[2023-04-13|10:11:11.315] Executed block                               module=state height=58 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:11.317] Committed state                              module=state height=58 txs=0 appHash=
+I[2023-04-13|10:11:12.672] Executed block                               module=state height=59 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:12.673] Committed state                              module=state height=59 txs=0 appHash=
+I[2023-04-13|10:11:14.092] Executed block                               module=state height=60 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:14.094] Committed state                              module=state height=60 txs=0 appHash=
+I[2023-04-13|10:11:15.451] Executed block                               module=state height=61 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:15.453] Committed state                              module=state height=61 txs=0 appHash=
+I[2023-04-13|10:11:16.803] Executed block                               module=state height=62 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:16.804] Committed state                              module=state height=62 txs=0 appHash=
+I[2023-04-13|10:11:18.368] Executed block                               module=state height=63 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:18.377] Committed state                              module=state height=63 txs=0 appHash=
+I[2023-04-13|10:11:19.716] Executed block                               module=state height=64 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:19.717] Committed state                              module=state height=64 txs=0 appHash=
+I[2023-04-13|10:11:21.135] Executed block                               module=state height=65 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:21.136] Committed state                              module=state height=65 txs=0 appHash=
+I[2023-04-13|10:11:22.552] Executed block                               module=state height=66 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:22.556] Committed state                              module=state height=66 txs=0 appHash=
+I[2023-04-13|10:11:24.001] Executed block                               module=state height=67 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:24.002] Committed state                              module=state height=67 txs=0 appHash=
+I[2023-04-13|10:11:25.482] Executed block                               module=state height=68 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:25.483] Committed state                              module=state height=68 txs=0 appHash=
+I[2023-04-13|10:11:26.943] Executed block                               module=state height=69 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:26.945] Committed state                              module=state height=69 txs=0 appHash=
+I[2023-04-13|10:11:28.270] Executed block                               module=state height=70 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:28.271] Committed state                              module=state height=70 txs=0 appHash=
+E[2023-04-13|10:11:28.590] dialing failed (attempts: 1): self ID<5bd6ecea9c240fa2ce031ac08fc9359ee6d47242> module=pex addr=5bd6ecea9c240fa2ce031ac08fc9359ee6d47242@192.167.10.5:26656
+I[2023-04-13|10:11:29.756] Executed block                               module=state height=71 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:29.757] Committed state                              module=state height=71 txs=0 appHash=
+I[2023-04-13|10:11:31.221] Executed block                               module=state height=72 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:31.222] Committed state                              module=state height=72 txs=0 appHash=
+I[2023-04-13|10:11:32.679] Executed block                               module=state height=73 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:32.681] Committed state                              module=state height=73 txs=0 appHash=
+I[2023-04-13|10:11:34.018] Executed block                               module=state height=74 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:34.020] Committed state                              module=state height=74 txs=0 appHash=
+I[2023-04-13|10:11:35.472] Executed block                               module=state height=75 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:35.473] Committed state                              module=state height=75 txs=0 appHash=
+I[2023-04-13|10:11:37.110] Executed block                               module=state height=76 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:37.111] Committed state                              module=state height=76 txs=0 appHash=
+I[2023-04-13|10:11:38.586] Executed block                               module=state height=77 validTxs=0 invalidTxs=0
+I[2023-04-13|10:11:38.587] Committed state                              module=state height=77 txs=0 appHash=
