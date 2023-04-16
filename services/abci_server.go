@@ -15,7 +15,7 @@ import (
 type ABCIService struct {
 	ctx     context.Context
 	ABCIApp *ABCIApp
-	server  *service.Service
+	server  service.Service
 }
 
 func NewABCIService(ctx context.Context) *ABCIService {
@@ -39,8 +39,12 @@ func (a *ABCIService) OnStart() error {
 		os.Exit(1)
 	}
 	// defer server.Stop()
+	a.server = server
 	return nil
 }
 func (a *ABCIService) OnStop() error {
+	if a.server != nil {
+		return a.server.Stop()
+	}
 	return nil
 }
