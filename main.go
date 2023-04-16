@@ -29,8 +29,9 @@ func main() {
 	config.GlobalConfig = globalConfig
 	// Initial service
 	abciService := services.NewABCIService(ctx)
+	p2pService := services.NewP2PService(ctx)
 
-	compositeService := services.NewCompositeService(abciService)
+	compositeService := services.NewCompositeService(abciService, p2pService)
 	// Start all services
 	err = compositeService.OnStart()
 	if err != nil {
