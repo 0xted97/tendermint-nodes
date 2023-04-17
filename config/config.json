@@ -1,6 +1,8 @@
 {
     "httpServerPort": "127.0.0.1:3000",
-    "p2pAddress": "/ip4/0.0.0.0/tcp/3000",
+    "p2pAddress": "/ip4/127.0.0.1/tcp/1080",
     "socketServerPort": "localhost:26658",
-    "databasePath": "./tmp/badge"
+    "databasePath": "./tmp/badge",
+
+    "nodePrivateKey": "21d7cb3f801dff3e8dc5c9530891b52761bdfa75e7f4671408fbe5bf8fd9d559"
 }
