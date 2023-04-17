@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 
 	"github.com/libp2p/go-libp2p"
@@ -29,20 +29,21 @@ func (p *P2PService) Name() string {
 
 func (p *P2PService) OnStart() error {
 	// Random private key, will be modify after
-	prvKey, _, err := crypto.GenerateSecp256k1Key(rand.Reader)
-	if err != nil {
-		return err
-	}
-	// ethPrivateKeyHex := config.GlobalConfig.NodePrivateKey
-	// ethPrivateKeyBytes, err := hex.DecodeString(ethPrivateKeyHex)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to decode Ethereum private key: %w", err)
-	// }
-
-	// prvKey, err := crypto.UnmarshalSecp256k1PrivateKey(ethPrivateKeyBytes)
+	// prvKey, _, err := crypto.GenerateSecp256k1Key(rand.Reader)
 	// if err != nil {
 	// 	return err
 	// }
+
+	ethPrivateKeyHex := config.GlobalConfig.NodePrivateKey
+	ethPrivateKeyBytes, err := hex.DecodeString(ethPrivateKeyHex)
+	if err != nil {
+		return fmt.Errorf("failed to decode Ethereum private key: %w", err)
+	}
+
+	prvKey, err := crypto.UnmarshalSecp256k1PrivateKey(ethPrivateKeyBytes)
+	if err != nil {
+		return err
+	}
 
 	h, err := libp2p.New(
 		libp2p.ListenAddrStrings(config.GlobalConfig.P2PAddress),
