@@ -12,15 +12,15 @@ import (
 	"github.com/me/dkg-node/services"
 )
 
-var socketAddr string
+var configPath string
 
 func init() {
-	flag.StringVar(&socketAddr, "socket-addr", "unix://example.sock", "Unix domain socket address")
+	flag.StringVar(&configPath, "config-path", "./config/config.json", "config file")
 }
 
 func main() {
 	// Load config
-	globalConfig, err := config.LoadConfig()
+	globalConfig, err := config.LoadConfig(configPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading config: %v", err)
 		os.Exit(1)

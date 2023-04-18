@@ -16,7 +16,7 @@ type Config struct {
 	NodePrivateKey string `json:"nodePrivateKey" env:"NODE_PRIVATE_KEY"`
 }
 
-func LoadConfig() (*Config, error) {
+func LoadConfig(path string) (*Config, error) {
 	// Read the file content
 	data, err := ioutil.ReadFile("./config/config.json")
 	if err != nil {
