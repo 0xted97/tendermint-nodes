@@ -12,11 +12,14 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/me/dkg-node/config"
+	"github.com/multiformats/go-multiaddr"
 )
 
 type P2PService struct {
 	ctx  context.Context
 	host host.Host
+
+	peers []peer.AddrInfo
 }
 
 func NewP2PService(ctx context.Context) *P2PService {
@@ -58,6 +61,16 @@ func (p *P2PService) OnStart() error {
 
 	// Print the host's PeerInfo in multiaddr format
 	fmt.Printf("P2P host started with ID %s and address %s\n", h.ID(), h.Addrs()[0])
+
+	nodeList := []string{
+		"/ip4/127.0.0.1/tcp/54849/p2p/16Uiu2HAm1g5DaYPHYCu4pHtWVU64iezRZsCvXaZNPecm79K7SQv6",
+	}
+	if err := p.ConnectToPeers(nodeList); err != nil {
+		return fmt.Errorf("failed to connect to peers: %w", err)
+	}
+
+	// Test, it is remove after
+	p.SendMessage(p.peers[len(p.peers)-1].ID, "/test/1.0.0", []byte("Hello, target node!"))
 	p.host.SetStreamHandler(protocol.ID("/test/1.0.0"), p.handleStream)
 
 	return nil
@@ -75,9 +88,34 @@ func (p *P2PService) handleStream(stream network.Stream) {
 	fmt.Printf("Received message: %s\n", string(buf[:n]))
 }
 
-func (p *P2PService) SendMessage(peerID peer.ID, msg []byte) error {
+func (p *P2PService) ConnectToPeers(peers []string) error {
+	for _, peerAddr := range peers {
+		addr, err := multiaddr.NewMultiaddr(peerAddr)
+		if err != nil {
+			return fmt.Errorf("invalid multiaddr: %w", err)
+		}
+
+		addrInfo, err := peer.AddrInfoFromP2pAddr(addr)
+		if err != nil {
+			return fmt.Errorf("failed to get AddrInfo: %w", err)
+		}
+
+		err = p.host.Connect(p.ctx, *addrInfo)
+		if err != nil {
+			return fmt.Errorf("failed to connect to peer: %w", err)
+		}
+
+		p.peers = append(p.peers, *addrInfo)
+
+		fmt.Printf("Connected to peer %s\n", addrInfo.ID.Pretty())
+	}
+
+	return nil
+}
+
+func (p *P2PService) SendMessage(peerID peer.ID, protocolID protocol.ID, msg []byte) error {
 	fmt.Printf("peerID: %v\n", peerID)
-	stream, err := p.host.NewStream(p.ctx, peerID, protocol.ID("/test/1.0.0"))
+	stream, err := p.host.NewStream(p.ctx, peerID, protocol.ID(protocolID))
 	if err != nil {
 		return fmt.Errorf("failed to create new stream: %w", err)
 	}
