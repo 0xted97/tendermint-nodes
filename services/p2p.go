@@ -114,7 +114,6 @@ func (p *P2PService) ConnectToPeers(peers []string) error {
 }
 
 func (p *P2PService) SendMessage(peerID peer.ID, protocolID protocol.ID, msg []byte) error {
-	fmt.Printf("peerID: %v\n", peerID)
 	stream, err := p.host.NewStream(p.ctx, peerID, protocol.ID(protocolID))
 	if err != nil {
 		return fmt.Errorf("failed to create new stream: %w", err)
