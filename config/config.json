@@ -4,5 +4,6 @@
     "socketServerPort": "localhost:26658",
     "databasePath": "./tmp/badge",
 
+    "ethAddress": "94bD9E312E33aB244970326Cf6173F3D9C3641d5",
     "nodePrivateKey": "21d7cb3f801dff3e8dc5c9530891b52761bdfa75e7f4671408fbe5bf8fd9d559"
 }

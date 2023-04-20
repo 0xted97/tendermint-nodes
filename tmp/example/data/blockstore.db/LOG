@@ -157,3 +157,137 @@
 14:29:54.302108 version@stat F·[] S·0B[] Sc·[]
 14:29:54.320849 db@janitor F·2 G·0
 14:29:54.320865 db@open done T·19.230917ms
+=============== Apr 20, 2023 (+07) ===============
+11:16:26.352380 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:16:26.353021 version@stat F·[] S·0B[] Sc·[]
+11:16:26.353044 db@open opening
+11:16:26.353076 journal@recovery F·1
+11:16:26.353673 journal@recovery recovering @34
+11:16:26.354067 version@stat F·[] S·0B[] Sc·[]
+11:16:26.367747 db@janitor F·2 G·0
+11:16:26.368708 db@open done T·15.657875ms
+=============== Apr 20, 2023 (+07) ===============
+11:16:42.574279 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:16:42.574646 version@stat F·[] S·0B[] Sc·[]
+11:16:42.574663 db@open opening
+11:16:42.574704 journal@recovery F·1
+11:16:42.574873 journal@recovery recovering @36
+11:16:42.575435 version@stat F·[] S·0B[] Sc·[]
+11:16:42.585872 db@janitor F·2 G·0
+11:16:42.585891 db@open done T·11.220584ms
+=============== Apr 20, 2023 (+07) ===============
+11:16:45.592635 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:16:45.592863 version@stat F·[] S·0B[] Sc·[]
+11:16:45.592883 db@open opening
+11:16:45.592928 journal@recovery F·1
+11:16:45.593086 journal@recovery recovering @38
+11:16:45.593409 version@stat F·[] S·0B[] Sc·[]
+11:16:45.603637 db@janitor F·2 G·0
+11:16:45.603661 db@open done T·10.769291ms
+=============== Apr 20, 2023 (+07) ===============
+11:17:05.440404 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:17:05.440739 version@stat F·[] S·0B[] Sc·[]
+11:17:05.440758 db@open opening
+11:17:05.440802 journal@recovery F·1
+11:17:05.440893 journal@recovery recovering @40
+11:17:05.441160 version@stat F·[] S·0B[] Sc·[]
+11:17:05.450797 db@janitor F·2 G·0
+11:17:05.450817 db@open done T·10.051375ms
+=============== Apr 20, 2023 (+07) ===============
+11:17:22.099644 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:17:22.100127 version@stat F·[] S·0B[] Sc·[]
+11:17:22.100155 db@open opening
+11:17:22.100229 journal@recovery F·1
+11:17:22.100413 journal@recovery recovering @42
+11:17:22.100745 version@stat F·[] S·0B[] Sc·[]
+11:17:22.109875 db@janitor F·2 G·0
+11:17:22.109893 db@open done T·9.727875ms
+=============== Apr 20, 2023 (+07) ===============
+11:23:36.434795 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:23:36.435040 version@stat F·[] S·0B[] Sc·[]
+11:23:36.435058 db@open opening
+11:23:36.435103 journal@recovery F·1
+11:23:36.435253 journal@recovery recovering @44
+11:23:36.443278 memdb@flush created L0@46 N·2160 S·309KiB "BH:..62f,v495":"blo..ore,v6"
+11:23:36.443448 version@stat F·[1] S·309KiB[309KiB] Sc·[0.25]
+11:23:36.457306 db@janitor F·3 G·0
+11:23:36.457323 db@open done T·22.267625ms
+=============== Apr 20, 2023 (+07) ===============
+11:24:06.580628 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:24:06.580889 version@stat F·[1] S·309KiB[309KiB] Sc·[0.25]
+11:24:06.580907 db@open opening
+11:24:06.580954 journal@recovery F·1
+11:24:06.581114 journal@recovery recovering @47
+11:24:06.585031 memdb@flush created L0@49 N·126 S·18KiB "BH:..aae,v2224":"blo..ore,v2167"
+11:24:06.585608 version@stat F·[2] S·328KiB[328KiB] Sc·[0.50]
+11:24:06.596557 db@janitor F·4 G·0
+11:24:06.596570 db@open done T·15.657084ms
+11:24:06.635767 table@compaction L0·2 -> L1·0 S·328KiB Q·2288
+11:24:06.643569 table@build created L1@52 N·1906 S·324KiB "BH:..62f,v495":"blo..ore,v2287"
+11:24:06.643635 version@stat F·[0 1] S·324KiB[0B 324KiB] Sc·[0.00 0.00]
+11:24:06.649145 table@compaction committed F-1 S-3KiB Ke·0 D·380 T·13.357958ms
+11:24:06.649533 table@remove removed @46
+=============== Apr 20, 2023 (+07) ===============
+11:25:27.590033 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:27.590655 version@stat F·[0 1] S·324KiB[0B 324KiB] Sc·[0.00 0.00]
+11:25:27.590671 db@open opening
+11:25:27.590705 journal@recovery F·1
+11:25:27.591879 journal@recovery recovering @50
+11:25:27.597652 memdb@flush created L0@53 N·300 S·43KiB "BH:..01e,v2483":"blo..ore,v2294"
+11:25:27.597788 version@stat F·[1 1] S·367KiB[43KiB 324KiB] Sc·[0.25 0.00]
+11:25:27.607407 db@janitor F·5 G·1
+11:25:27.607413 db@janitor removing table-49
+11:25:27.607491 db@open done T·16.814792ms
+11:25:27.652360 table@compaction L0·1 -> L1·1 S·367KiB Q·2589
+11:25:27.660599 table@build created L1@56 N·2156 S·367KiB "BH:..62f,v495":"blo..ore,v2588"
+11:25:27.660893 version@stat F·[0 1] S·367KiB[0B 367KiB] Sc·[0.00 0.00]
+11:25:27.667772 table@compaction committed F-1 S-244B Ke·0 D·50 T·15.399334ms
+11:25:27.667835 table@remove removed @52
+=============== Apr 20, 2023 (+07) ===============
+11:25:49.965557 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:25:49.966050 version@stat F·[0 1] S·367KiB[0B 367KiB] Sc·[0.00 0.00]
+11:25:49.966070 db@open opening
+11:25:49.966120 journal@recovery F·1
+11:25:49.966289 journal@recovery recovering @54
+11:25:49.973146 memdb@flush created L0@57 N·114 S·16KiB "BH:..26e,v2670":"blo..ore,v2595"
+11:25:49.973304 version@stat F·[1 1] S·384KiB[16KiB 367KiB] Sc·[0.25 0.00]
+11:25:49.984840 db@janitor F·5 G·1
+11:25:49.984848 db@janitor removing table-53
+11:25:49.984912 db@open done T·18.834333ms
+11:25:53.047176 table@compaction L0·1 -> L1·1 S·384KiB Q·2704
+11:25:53.060039 table@build created L1@60 N·2251 S·383KiB "BH:..62f,v495":"blo..ore,v2703"
+11:25:53.060070 version@stat F·[0 1] S·383KiB[0B 383KiB] Sc·[0.00 0.00]
+11:25:53.066037 table@compaction committed F-1 S-169B Ke·0 D·19 T·18.793875ms
+11:25:53.066225 table@remove removed @56
+=============== Apr 20, 2023 (+07) ===============
+11:26:14.069272 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:26:14.070185 version@stat F·[0 1] S·383KiB[0B 383KiB] Sc·[0.00 0.00]
+11:26:14.070195 db@open opening
+11:26:14.070233 journal@recovery F·1
+11:26:14.071652 journal@recovery recovering @58
+11:26:14.077560 memdb@flush created L0@61 N·6 S·923B "BH:..b8b,v2707":"blo..ore,v2710"
+11:26:14.077933 version@stat F·[1 1] S·384KiB[923B 383KiB] Sc·[0.25 0.00]
+11:26:14.087674 db@janitor F·5 G·1
+11:26:14.087875 db@janitor removing table-57
+11:26:14.088196 db@open done T·17.996291ms
+11:26:14.137425 table@compaction L0·1 -> L1·1 S·384KiB Q·2711
+11:26:14.143448 table@build created L1@64 N·2256 S·384KiB "BH:..62f,v495":"blo..ore,v2710"
+11:26:14.143880 version@stat F·[0 1] S·384KiB[0B 384KiB] Sc·[0.00 0.00]
+11:26:14.149426 table@compaction committed F-1 S-23B Ke·0 D·1 T·11.980208ms
+11:26:14.149521 table@remove removed @60
+=============== Apr 20, 2023 (+07) ===============
+11:26:52.750569 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:26:52.751132 version@stat F·[0 1] S·384KiB[0B 384KiB] Sc·[0.00 0.00]
+11:26:52.751144 db@open opening
+11:26:52.751178 journal@recovery F·1
+11:26:52.751800 journal@recovery recovering @62
+11:26:52.755843 memdb@flush created L0@65 N·12 S·1KiB "BH:..fa0,v2714":"blo..ore,v2717"
+11:26:52.756005 version@stat F·[1 1] S·386KiB[1KiB 384KiB] Sc·[0.25 0.00]
+11:26:52.763841 db@janitor F·5 G·1
+11:26:52.763979 db@janitor removing table-61
+11:26:52.764033 db@open done T·12.884125ms
+11:26:52.803322 table@compaction L0·1 -> L1·1 S·386KiB Q·2724
+11:26:52.811714 table@build created L1@68 N·2266 S·386KiB "BH:..62f,v495":"blo..ore,v2723"
+11:26:52.812021 version@stat F·[0 1] S·386KiB[0B 386KiB] Sc·[0.00 0.00]
+11:26:52.815646 table@compaction committed F-1 S+448B Ke·0 D·2 T·12.311416ms
+11:26:52.815812 table@remove removed @64

@@ -1,7 +1,6 @@
 package services
 
 import (
-	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
@@ -39,6 +38,8 @@ type State struct {
 	LastUnassignedIndex uint `json:"last_unassigned_index"`
 	LastCreatedIndex    uint
 	NewKeyAssignments   []KeyAssignmentPublic `json:"new_key_assignments"`
+	SecretShare         [][]byte              `json:"secret_share"`
+	ReceiveShares       map[int][]Share       `json:"receive_shares"`
 }
 
 type ABCIApp struct {
@@ -64,37 +65,7 @@ func (app *ABCIApp) getKeyIndex(verifierID string, verifier string) int {
 	return -1
 }
 
-func generateRandomKeyAssignments(n int, threshold int) ([]KeyAssignmentPublic, error) {
-	assignments := make([]KeyAssignmentPublic, n)
-	curve := elliptic.P256()
-
-	for i := 0; i < n; i++ {
-		_, x, y, err := elliptic.GenerateKey(curve, rand.Reader)
-		if err != nil {
-			return nil, fmt.Errorf("failed to generate key pair: %v", err)
-		}
-		publicKey := elliptic.Marshal(curve, x, y)
-
-		verifiers := make(map[string]string)
-		// verifiers[randomString(10)] = randomString(10)
-		assignments[i] = KeyAssignmentPublic{
-			Index:     i,
-			PublicKey: publicKey,
-			Threshold: threshold,
-			Verifiers: verifiers,
-		}
-	}
-
-	return assignments, nil
-}
-
 func (ABCIService) NewABCIApp() *ABCIApp {
-	assignments, err := generateRandomKeyAssignments(10, 3) // Adjust threshold as needed
-	if err != nil {
-		fmt.Printf("Failed to generate random key assignments: %v\n", err)
-		return nil
-	}
-
 	db, err := badger.Open(badger.DefaultOptions(config.GlobalConfig.DatabasePath))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to open badger db: %v", err)
@@ -106,8 +77,10 @@ func (ABCIService) NewABCIApp() *ABCIApp {
 		db: db,
 		state: &State{
 			LastUnassignedIndex: 0,
-			LastCreatedIndex:    10,
-			NewKeyAssignments:   assignments,
+			LastCreatedIndex:    0,
+			NewKeyAssignments:   []KeyAssignmentPublic{},
+			SecretShare:         [][]byte{},
+			ReceiveShares:       make(map[int][]Share),
 		},
 	}
 }
@@ -140,8 +113,6 @@ func (app *ABCIApp) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.Response
 	}
 	verifierID := queryParams.Get("verifierID")
 	verifier := queryParams.Get("verifier")
-	fmt.Printf("verifier: %v\n", verifier)
-	fmt.Printf("verifierID: %v\n", verifierID)
 	index := app.getKeyIndex(verifierID, verifier)
 	if index >= 0 {
 		return abcitypes.ResponseDeliverTx{Code: 1, Log: "Key already assigned to verifier"}
@@ -220,6 +191,18 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 
 		}
 		break
+	case "/GetShare":
+		index := string(reqQuery.Data)
+		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.SecretShare) {
+			resQuery.Key = reqQuery.Data
+			resQuery.Value = app.state.SecretShare[indexInt]
+			resQuery.Code = 0
+			resQuery.Log = "success"
+		} else {
+			resQuery.Code = 1
+			resQuery.Log = "invalid index"
+		}
+		break
 	default:
 		resQuery.Code = 1
 		resQuery.Log = "unknown query path"
@@ -232,7 +215,6 @@ func (ABCIApp) InitChain(req abcitypes.RequestInitChain) abcitypes.ResponseInitC
 }
 
 func (app *ABCIApp) BeginBlock(req abcitypes.RequestBeginBlock) abcitypes.ResponseBeginBlock {
-	println("BeginBlock: ", req.Header.Height)
 	return abcitypes.ResponseBeginBlock{}
 }
 
@@ -270,4 +252,9 @@ func (app *ABCIApp) isValid(tx []byte) (code uint32) {
 		code = 1
 	}
 	return code
+}
+
+// Functions custom more
+func (app *ABCIApp) InsertShare() {
+
 }

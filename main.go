@@ -25,12 +25,19 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error loading config: %v", err)
 		os.Exit(1)
 	}
-	ctx := context.Background()
+	nodeList, err := config.LoadNodeList()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error loading config: %v", err)
+		os.Exit(1)
+	}
 	config.GlobalConfig = globalConfig
+	config.NodeList = nodeList
+
+	ctx := context.Background()
 	// Initial service
 	abciService := services.NewABCIService(ctx)
 	p2pService := services.NewP2PService(ctx)
-	keyGenService := services.NewKeyGenService(ctx, p2pService)
+	keyGenService := services.NewKeyGenService(ctx)
 
 	compositeService := services.NewCompositeService(abciService, p2pService, keyGenService)
 	// Start all services
@@ -39,6 +46,9 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Failed to start composite service:%v", err)
 		os.Exit(1)
 	}
+
+	// Inject services for service after start
+	keyGenService.InjectServices(p2pService, abciService.ABCIApp)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)

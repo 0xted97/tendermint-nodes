@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/host"
-	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/me/dkg-node/config"
@@ -19,7 +19,8 @@ type P2PService struct {
 	ctx  context.Context
 	host host.Host
 
-	peers []peer.AddrInfo
+	peers       []peer.AddrInfo
+	peersDetail []config.NodeDetail
 }
 
 func NewP2PService(ctx context.Context) *P2PService {
@@ -62,34 +63,19 @@ func (p *P2PService) OnStart() error {
 	// Print the host's PeerInfo in multiaddr format
 	fmt.Printf("P2P host started with ID %s and address %s\n", h.ID(), h.Addrs()[0])
 
-	nodeList := []string{
-		"/ip4/127.0.0.1/tcp/54849/p2p/16Uiu2HAm1g5DaYPHYCu4pHtWVU64iezRZsCvXaZNPecm79K7SQv6",
-	}
-	if err := p.ConnectToPeers(nodeList); err != nil {
+	if err := p.ConnectToPeers(); err != nil {
 		return fmt.Errorf("failed to connect to peers: %w", err)
 	}
-
-	// Test, it is remove after
-	p.SendMessage(p.peers[len(p.peers)-1].ID, "/test/1.0.0", []byte("Hello, target node!"))
-	p.host.SetStreamHandler(protocol.ID("/test/1.0.0"), p.handleStream)
 
 	return nil
 }
 
-func (p *P2PService) handleStream(stream network.Stream) {
-	defer stream.Close()
-	buf := make([]byte, 128)
-	n, err := stream.Read(buf)
-	if err != nil {
-		fmt.Printf("Error reading from stream: %v\n", err)
-		return
-	}
+func (p *P2PService) ConnectToPeers() error {
+	// Will get from smart contracts
+	nodes := *config.NodeList
+	for _, node := range nodes {
 
-	fmt.Printf("Received message: %s\n", string(buf[:n]))
-}
-
-func (p *P2PService) ConnectToPeers(peers []string) error {
-	for _, peerAddr := range peers {
+		peerAddr := node.P2PAddress
 		addr, err := multiaddr.NewMultiaddr(peerAddr)
 		if err != nil {
 			return fmt.Errorf("invalid multiaddr: %w", err)
@@ -99,13 +85,22 @@ func (p *P2PService) ConnectToPeers(peers []string) error {
 		if err != nil {
 			return fmt.Errorf("failed to get AddrInfo: %w", err)
 		}
+		// check self address
+		if strings.ToLower(node.EthAddress) == strings.ToLower(config.GlobalConfig.EthAddress) {
+			p.peers = append(p.peers, *addrInfo)
+			node.Self = true
+			p.peersDetail = append(p.peersDetail, node)
+			continue
+		}
 
 		err = p.host.Connect(p.ctx, *addrInfo)
 		if err != nil {
 			return fmt.Errorf("failed to connect to peer: %w", err)
 		}
-
+		// p.peer and p.connectedPeers are the same
+		node.Self = false
 		p.peers = append(p.peers, *addrInfo)
+		p.peersDetail = append(p.peersDetail, node)
 
 		fmt.Printf("Connected to peer %s\n", addrInfo.ID.Pretty())
 	}

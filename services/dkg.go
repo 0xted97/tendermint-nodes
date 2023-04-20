@@ -1,6 +1,7 @@
 package services
 
 import (
+	"crypto/elliptic"
 	"crypto/rand"
 	"fmt"
 
@@ -10,14 +11,16 @@ import (
 )
 
 type Share struct {
-	ID    int
-	Share []byte
+	ID        int
+	NodeIndex int
+	Share     []byte
 }
 
-func EncodeShare(id int, share []byte) ([]byte, error) {
+func EncodeShare(id int, nodeIndex int, share []byte) ([]byte, error) {
 	shareData := Share{
-		ID:    id,
-		Share: share,
+		ID:        id,
+		NodeIndex: nodeIndex,
+		Share:     share,
 	}
 
 	encodedShare, err := json.Marshal(shareData)
@@ -26,6 +29,17 @@ func EncodeShare(id int, share []byte) ([]byte, error) {
 	}
 
 	return encodedShare, nil
+}
+
+func DecodeShare(encodedShare []byte) (Share, error) {
+	var shareData Share
+
+	err := json.Unmarshal(encodedShare, &shareData)
+	if err != nil {
+		return Share{}, fmt.Errorf("failed to encode share: %w", err)
+	}
+
+	return shareData, nil
 }
 
 type DKG struct {
@@ -43,9 +57,9 @@ func InitializeDKG(n int, t int) *DKG {
 // GenerateShares generates a random secret and creates n shares with a threshold of t.
 // Returns the generated secret, and a slice of shares.
 func GenerateShares(n int, t int) ([]byte, [][]byte, error) {
+	curve := elliptic.P256()
 	// Generate a random secret
-	secret := make([]byte, 32)
-	_, err := rand.Read(secret)
+	secret, _, _, err := elliptic.GenerateKey(curve, rand.Reader)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to generate random secret: %w", err)
 	}

@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {
+      "index": 1,
+      "ethAddress":"94bD9E312E33aB244970326Cf6173F3D9C3641d5",
+      "p2pAddress": "/ip4/127.0.0.1/tcp/1080/p2p/16Uiu2HAm3CpmxLibUsAMEPny93k87NkwbzybBqNTnMGvKQnYbVYv"
+    },
+    {
+      "index": 2,
+      "ethAddress": "7455169114c3f39cE2db72ac4Ef3F7f0aA21dc01",
+      "p2pAddress": "/ip4/127.0.0.1/tcp/54848/p2p/16Uiu2HAm1g5DaYPHYCu4pHtWVU64iezRZsCvXaZNPecm79K7SQv6"
+    },
+    {
+      "index": 3,
+      "ethAddress": "ed72C82d55C6a4509723c778Dd56D4a5Ec9A5024",
+      "p2pAddress": "/ip4/127.0.0.1/tcp/54849/p2p/16Uiu2HAm61C7ML24pX13pyuzbbtrxocETmcb9V5J8nc2m62vjHaY"
+    }
+  ]
+}
