@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -16,11 +17,14 @@ type Config struct {
 
 	EthAddress     string `json:"ethAddress" env:"ETH_ADDRESS"`
 	NodePrivateKey string `json:"nodePrivateKey" env:"NODE_PRIVATE_KEY"`
+
+	NumberOfNodes int `json:"numberOfNodes" env:"NUMBER_OF_NODES"`
 }
 
 func LoadConfig(path string) (*Config, error) {
+	fmt.Printf("path: %v\n", path)
 	// Read the file content
-	data, err := ioutil.ReadFile("./config/config.json")
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

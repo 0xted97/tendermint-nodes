@@ -7,20 +7,25 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/me/dkg-node/config"
 	"github.com/me/dkg-node/services"
 )
 
-var configPath string
+var path string
 
 func init() {
-	flag.StringVar(&configPath, "config-path", "./config/config.json", "config file")
+	flag.StringVar(&path, "config-path", "./config/config.json", "config file")
 }
 
 func main() {
+	flag.Parse()
+	ctx := context.Background()
+
 	// Load config
-	globalConfig, err := config.LoadConfig(configPath)
+	fmt.Printf("path: %v\n", path)
+	globalConfig, err := config.LoadConfig(path)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading config: %v", err)
 		os.Exit(1)
@@ -33,7 +38,6 @@ func main() {
 	config.GlobalConfig = globalConfig
 	config.NodeList = nodeList
 
-	ctx := context.Background()
 	// Initial service
 	abciService := services.NewABCIService(ctx)
 	p2pService := services.NewP2PService(ctx)
@@ -50,13 +54,27 @@ func main() {
 	// Inject services for service after start
 	keyGenService.InjectServices(p2pService, abciService.ABCIApp)
 
+	// Initialize all necessary channels
+	nodeListMonitorTicker := time.NewTicker(5 * time.Second)
+	idleConnsClosed := make(chan struct{})
+
+	go services.NodeListMonitor(nodeListMonitorTicker.C, p2pService, idleConnsClosed)
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	<-c
+
+	go func() {
+		<-c
+		// Stop NodeList monitor ticker
+		nodeListMonitorTicker.Stop()
+		// Exit the blocking chan
+		close(idleConnsClosed)
+	}()
 
 	err = compositeService.OnStop()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not stop composite service:%v", err)
 	}
+	<-idleConnsClosed
 	os.Exit(0)
 }

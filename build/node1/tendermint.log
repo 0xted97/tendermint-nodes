@@ -1,63 +1,24 @@
-I[2023-04-13|10:10:58.449] Version info                                 module=main software=v0.34.0 block=11 p2p=8
-I[2023-04-13|10:10:58.534] Starting Node service                        module=main impl=Node
-I[2023-04-13|10:10:58.554] Starting StateSync service                   module=statesync impl=StateSync
-E[2023-04-13|10:10:58.568] dialing failed (attempts: 1): dial tcp 192.167.10.2:26656: connect: connection refused module=pex addr=7e80d23025b485d2d00306dc77e466de414339c8@192.167.10.2:26656
-I[2023-04-13|10:10:58.605] Started node                                 module=main nodeInfo="{ProtocolVersion:{P2P:8 Block:11 App:0} DefaultNodeID:0ec8b50bd750952aace1a11af49eea79344af47f ListenAddr:tcp://0.0.0.0:26656 Network:chain-H5iqVd Version:v0.34.0 Channels:40202122233038606100 Moniker:6EF491819DBB1ADE Other:{TxIndex:on RPCAddress:tcp://0.0.0.0:26657}}"
-E[2023-04-13|10:10:58.638] dialing failed (attempts: 1): duplicate ID<5bd6ecea9c240fa2ce031ac08fc9359ee6d47242> module=pex addr=5bd6ecea9c240fa2ce031ac08fc9359ee6d47242@192.167.10.5:26656
-E[2023-04-13|10:10:58.654] dialing failed (attempts: 1): duplicate ID<ceae5c4eab7da9c1e0704287cefacaf487d2441a> module=pex addr=ceae5c4eab7da9c1e0704287cefacaf487d2441a@192.167.10.4:26656
-I[2023-04-13|10:11:00.134] Executed block                               module=state height=50 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:00.137] Committed state                              module=state height=50 txs=0 appHash=
-I[2023-04-13|10:11:01.506] Executed block                               module=state height=51 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:01.507] Committed state                              module=state height=51 txs=0 appHash=
-I[2023-04-13|10:11:02.916] Executed block                               module=state height=52 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:02.917] Committed state                              module=state height=52 txs=0 appHash=
-I[2023-04-13|10:11:04.277] Executed block                               module=state height=53 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:04.278] Committed state                              module=state height=53 txs=0 appHash=
-I[2023-04-13|10:11:05.733] Executed block                               module=state height=54 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:05.735] Committed state                              module=state height=54 txs=0 appHash=
-I[2023-04-13|10:11:07.040] Executed block                               module=state height=55 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:07.041] Committed state                              module=state height=55 txs=0 appHash=
-I[2023-04-13|10:11:08.507] Executed block                               module=state height=56 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:08.509] Committed state                              module=state height=56 txs=0 appHash=
-I[2023-04-13|10:11:09.946] Executed block                               module=state height=57 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:09.949] Committed state                              module=state height=57 txs=0 appHash=
-I[2023-04-13|10:11:11.311] Executed block                               module=state height=58 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:11.312] Committed state                              module=state height=58 txs=0 appHash=
-I[2023-04-13|10:11:12.668] Executed block                               module=state height=59 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:12.669] Committed state                              module=state height=59 txs=0 appHash=
-I[2023-04-13|10:11:14.087] Executed block                               module=state height=60 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:14.089] Committed state                              module=state height=60 txs=0 appHash=
-I[2023-04-13|10:11:15.450] Executed block                               module=state height=61 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:15.452] Committed state                              module=state height=61 txs=0 appHash=
-I[2023-04-13|10:11:16.902] Executed block                               module=state height=62 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:16.904] Committed state                              module=state height=62 txs=0 appHash=
-I[2023-04-13|10:11:18.370] Executed block                               module=state height=63 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:18.377] Committed state                              module=state height=63 txs=0 appHash=
-I[2023-04-13|10:11:19.719] Executed block                               module=state height=64 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:19.720] Committed state                              module=state height=64 txs=0 appHash=
-I[2023-04-13|10:11:21.175] Executed block                               module=state height=65 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:21.176] Committed state                              module=state height=65 txs=0 appHash=
-I[2023-04-13|10:11:22.554] Executed block                               module=state height=66 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:22.556] Committed state                              module=state height=66 txs=0 appHash=
-I[2023-04-13|10:11:24.004] Executed block                               module=state height=67 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:24.005] Committed state                              module=state height=67 txs=0 appHash=
-I[2023-04-13|10:11:25.484] Executed block                               module=state height=68 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:25.485] Committed state                              module=state height=68 txs=0 appHash=
-I[2023-04-13|10:11:26.835] Executed block                               module=state height=69 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:26.838] Committed state                              module=state height=69 txs=0 appHash=
-I[2023-04-13|10:11:28.198] Executed block                               module=state height=70 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:28.199] Committed state                              module=state height=70 txs=0 appHash=
-I[2023-04-13|10:11:29.759] Executed block                               module=state height=71 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:29.761] Committed state                              module=state height=71 txs=0 appHash=
-I[2023-04-13|10:11:31.130] Executed block                               module=state height=72 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:31.132] Committed state                              module=state height=72 txs=0 appHash=
-I[2023-04-13|10:11:32.677] Executed block                               module=state height=73 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:32.679] Committed state                              module=state height=73 txs=0 appHash=
-I[2023-04-13|10:11:34.023] Executed block                               module=state height=74 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:34.024] Committed state                              module=state height=74 txs=0 appHash=
-I[2023-04-13|10:11:35.559] Executed block                               module=state height=75 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:35.560] Committed state                              module=state height=75 txs=0 appHash=
-I[2023-04-13|10:11:37.032] Executed block                               module=state height=76 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:37.034] Committed state                              module=state height=76 txs=0 appHash=
-I[2023-04-13|10:11:38.685] Executed block                               module=state height=77 validTxs=0 invalidTxs=0
-I[2023-04-13|10:11:38.686] Committed state                              module=state height=77 txs=0 appHash=
+E[2023-04-20|07:32:40.075] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:32:43.103] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:32:46.106] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:32:49.109] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:32:52.110] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:32:55.112] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:32:58.114] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:01.115] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:04.115] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:07.120] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:10.126] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:13.127] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:16.127] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:19.132] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:22.133] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:25.136] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:28.137] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:31.139] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:34.142] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:37.143] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:40.143] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:43.151] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:46.156] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"
+E[2023-04-20|07:33:49.160] abci.socketClient failed to connect to tcp://127.0.0.1:26658.  Retrying after 3s... module=abci-client connection=query err="dial tcp 127.0.0.1:26658: connect: connection refused"

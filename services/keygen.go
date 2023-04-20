@@ -56,6 +56,7 @@ func (k *KeyGenService) OnStart() error {
 }
 
 func (k *KeyGenService) handleDKGSendStream(stream network.Stream) {
+	fmt.Printf("stream: %v\n", stream)
 	defer stream.Close()
 	buf := make([]byte, 128)
 	n, err := stream.Read(buf)

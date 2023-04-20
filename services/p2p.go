@@ -63,49 +63,46 @@ func (p *P2PService) OnStart() error {
 	// Print the host's PeerInfo in multiaddr format
 	fmt.Printf("P2P host started with ID %s and address %s\n", h.ID(), h.Addrs()[0])
 
-	if err := p.ConnectToPeers(); err != nil {
-		return fmt.Errorf("failed to connect to peers: %w", err)
-	}
+	// if err := p.ConnectToPeers(); err != nil {
+	// 	return fmt.Errorf("failed to connect to peers: %w", err)
+	// }
 
 	return nil
 }
 
-func (p *P2PService) ConnectToPeers() error {
+func (p *P2PService) ConnectToPeer(node config.NodeDetail) (config.NodeDetail, error) {
 	// Will get from smart contracts
-	nodes := *config.NodeList
-	for _, node := range nodes {
 
-		peerAddr := node.P2PAddress
-		addr, err := multiaddr.NewMultiaddr(peerAddr)
-		if err != nil {
-			return fmt.Errorf("invalid multiaddr: %w", err)
-		}
-
-		addrInfo, err := peer.AddrInfoFromP2pAddr(addr)
-		if err != nil {
-			return fmt.Errorf("failed to get AddrInfo: %w", err)
-		}
-		// check self address
-		if strings.ToLower(node.EthAddress) == strings.ToLower(config.GlobalConfig.EthAddress) {
-			p.peers = append(p.peers, *addrInfo)
-			node.Self = true
-			p.peersDetail = append(p.peersDetail, node)
-			continue
-		}
-
-		err = p.host.Connect(p.ctx, *addrInfo)
-		if err != nil {
-			return fmt.Errorf("failed to connect to peer: %w", err)
-		}
-		// p.peer and p.connectedPeers are the same
-		node.Self = false
-		p.peers = append(p.peers, *addrInfo)
-		p.peersDetail = append(p.peersDetail, node)
-
-		fmt.Printf("Connected to peer %s\n", addrInfo.ID.Pretty())
+	peerAddr := node.P2PAddress
+	addr, err := multiaddr.NewMultiaddr(peerAddr)
+	if err != nil {
+		return config.NodeDetail{}, fmt.Errorf("invalid multiaddr: %w", err)
 	}
 
-	return nil
+	addrInfo, err := peer.AddrInfoFromP2pAddr(addr)
+	if err != nil {
+		return config.NodeDetail{}, fmt.Errorf("failed to get AddrInfo: %w", err)
+	}
+	// check self address
+	if strings.ToLower(node.EthAddress) == strings.ToLower(config.GlobalConfig.EthAddress) {
+		p.peers = append(p.peers, *addrInfo)
+		node.Self = true
+		p.peersDetail = append(p.peersDetail, node)
+		return node, nil
+	}
+
+	err = p.host.Connect(p.ctx, *addrInfo)
+	if err != nil {
+		return config.NodeDetail{}, fmt.Errorf("failed to connect to peer: %w", err)
+	}
+	// p.peer and p.connectedPeers are the same
+	node.Self = false
+	p.peers = append(p.peers, *addrInfo)
+	p.peersDetail = append(p.peersDetail, node)
+
+	fmt.Printf("Connected to peer %s\n", addrInfo.ID.Pretty())
+
+	return node, nil
 }
 
 func (p *P2PService) SendMessage(peerID peer.ID, protocolID protocol.ID, msg []byte) error {

@@ -293,3 +293,38 @@
 11:26:52.809041 version@stat F·[0 1] S·11KiB[0B 11KiB] Sc·[0.00 0.00]
 11:26:52.815634 table@compaction committed F-1 S-576B Ke·0 D·2 T·10.3305ms
 11:26:52.815864 table@remove removed @65
+=============== Apr 20, 2023 (+07) ===============
+14:31:22.474344 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+14:31:22.474718 version@stat F·[0 1] S·11KiB[0B 11KiB] Sc·[0.00 0.00]
+14:31:22.474727 db@open opening
+14:31:22.474760 journal@recovery F·1
+14:31:22.475125 journal@recovery recovering @67
+14:31:22.479448 memdb@flush created L0@70 N·28 S·1KiB "abc..454,v1825":"val..462,v1850"
+14:31:22.479748 version@stat F·[1 1] S·12KiB[1KiB 11KiB] Sc·[0.25 0.00]
+14:31:22.490606 db@janitor F·5 G·1
+14:31:22.490611 db@janitor removing table-66
+14:31:22.490658 db@open done T·15.926208ms
+=============== Apr 20, 2023 (+07) ===============
+14:32:31.754912 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+14:32:31.755592 version@stat F·[1 1] S·12KiB[1KiB 11KiB] Sc·[0.25 0.00]
+14:32:31.755604 db@open opening
+14:32:31.755635 journal@recovery F·1
+14:32:31.755700 journal@recovery recovering @71
+14:32:31.755838 version@stat F·[1 1] S·12KiB[1KiB 11KiB] Sc·[0.25 0.00]
+14:32:31.763134 db@janitor F·4 G·0
+14:32:31.763145 db@open done T·7.536667ms
+=============== Apr 20, 2023 (+07) ===============
+15:46:04.536522 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:46:04.536909 version@stat F·[1 1] S·12KiB[1KiB 11KiB] Sc·[0.25 0.00]
+15:46:04.536917 db@open opening
+15:46:04.536946 journal@recovery F·1
+15:46:04.537003 journal@recovery recovering @73
+15:46:04.537121 version@stat F·[1 1] S·12KiB[1KiB 11KiB] Sc·[0.25 0.00]
+15:46:04.547412 db@janitor F·4 G·0
+15:46:04.547424 db@open done T·10.502875ms
+15:46:04.591591 table@compaction L0·1 -> L1·1 S·12KiB Q·1853
+15:46:04.595939 table@build created L1@77 N·1385 S·11KiB "abc..y:1,v7":"val..:99,v392"
+15:46:04.596205 version@stat F·[0 1] S·11KiB[0B 11KiB] Sc·[0.00 0.00]
+15:46:04.602880 table@compaction committed F-1 S-1KiB Ke·0 D·7 T·11.277916ms
+15:46:04.603215 table@remove removed @70
+15:46:04.606054 table@remove removed @69
