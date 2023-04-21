@@ -61,6 +61,7 @@ func main() {
 	<-establishConnection
 
 	keyGenService.GenerateAndSendShares()
+
 	// Stop NodeList monitor ticker
 	nodeListMonitorTicker.Stop()
 

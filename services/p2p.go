@@ -120,6 +120,21 @@ func (p *P2PService) SendMessage(peerID peer.ID, protocolID protocol.ID, msg []b
 	return nil
 }
 
+func (p *P2PService) NewP2PMessage(peerID peer.ID, protocolID protocol.ID, msg []byte) error {
+	stream, err := p.host.NewStream(p.ctx, peerID, protocol.ID(protocolID))
+	if err != nil {
+		return fmt.Errorf("failed to create new stream: %w", err)
+	}
+	defer stream.Close()
+
+	_, err = stream.Write(msg)
+	if err != nil {
+		return fmt.Errorf("failed to send message: %w", err)
+	}
+
+	return nil
+}
+
 func (p *P2PService) OnStop() error {
 	// Close the libp2p host and its associated connections
 	if p.host != nil {

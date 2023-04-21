@@ -1,8 +1,6 @@
 package services
 
 import (
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"math/big"
@@ -35,25 +33,16 @@ type KeyAssignmentPublic struct {
 }
 
 type State struct {
-	LastUnassignedIndex uint `json:"last_unassigned_index"`
-	LastCreatedIndex    uint
-	NewKeyAssignments   []KeyAssignmentPublic `json:"new_key_assignments"`
-	SecretShare         [][]byte              `json:"secret_share"`
-	ReceiveShares       map[int][]Share       `json:"receive_shares"`
+	LastUnassignedIndex int `json:"last_unassigned_index"`
+	LastCreatedIndex    int
+	NewKeyAssignments   map[int]KeyAssignmentPublic `json:"new_key_assignments"`
+	SecretShare         [][]byte                    `json:"secret_share"`
+	ReceiveShares       map[int][]Share             `json:"receive_shares"`
 }
 
 type ABCIApp struct {
 	db    *badger.DB
 	state *State
-}
-
-func randomString(n int) string {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
-	if err != nil {
-		panic(err)
-	}
-	return base64.URLEncoding.EncodeToString(b)
 }
 
 func (app *ABCIApp) getKeyIndex(verifierID string, verifier string) int {
@@ -78,7 +67,7 @@ func (ABCIService) NewABCIApp() *ABCIApp {
 		state: &State{
 			LastUnassignedIndex: 0,
 			LastCreatedIndex:    0,
-			NewKeyAssignments:   []KeyAssignmentPublic{},
+			NewKeyAssignments:   make(map[int]KeyAssignmentPublic),
 			SecretShare:         [][]byte{},
 			ReceiveShares:       make(map[int][]Share),
 		},
@@ -193,11 +182,19 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 		break
 	case "/GetShare":
 		index := string(reqQuery.Data)
-		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.SecretShare) {
-			resQuery.Key = reqQuery.Data
-			resQuery.Value = app.state.SecretShare[indexInt]
-			resQuery.Code = 0
-			resQuery.Log = "success"
+		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.ReceiveShares) {
+			receiveShares, err := json.Marshal(app.state.ReceiveShares[indexInt])
+			fmt.Printf("receiveShares: %v\n", receiveShares)
+			if err != nil {
+				resQuery.Code = 1
+				resQuery.Log = fmt.Sprintf("error marshalling key assignment: %v", err)
+			} else {
+				resQuery.Key = reqQuery.Data
+				resQuery.Value = receiveShares
+				resQuery.Code = 0
+				resQuery.Log = "success"
+			}
+
 		} else {
 			resQuery.Code = 1
 			resQuery.Log = "invalid index"
