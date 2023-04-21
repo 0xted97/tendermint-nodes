@@ -469,3 +469,35 @@
 15:38:10.685410 version@stat F·[0 1] S·1MiB[0B 1MiB] Sc·[0.00 0.01]
 15:38:10.693770 table@compaction committed F-1 S-363B Ke·0 D·26 T·26.280709ms
 15:38:10.693929 table@remove removed @108
+=============== Apr 21, 2023 (+07) ===============
+15:43:44.637802 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:43:44.639049 version@stat F·[0 1] S·1MiB[0B 1MiB] Sc·[0.00 0.01]
+15:43:44.639090 db@open opening
+15:43:44.639228 journal@recovery F·1
+15:43:44.641494 journal@recovery recovering @110
+15:43:44.646473 memdb@flush created L0@113 N·138 S·20KiB "BH:..33e,v8491":"blo..ore,v8374"
+15:43:44.646726 version@stat F·[1 1] S·1MiB[20KiB 1MiB] Sc·[0.25 0.01]
+15:43:44.658419 db@janitor F·5 G·1
+15:43:44.658646 db@janitor removing table-109
+15:43:44.658994 db@open done T·19.883666ms
+15:43:44.704466 table@compaction L0·1 -> L1·1 S·1MiB Q·8507
+15:43:44.716029 table@build created L1@116 N·7076 S·1MiB "BH:..62f,v495":"blo..ore,v8506"
+15:43:44.716044 version@stat F·[0 1] S·1MiB[0B 1MiB] Sc·[0.00 0.01]
+15:43:44.722056 table@compaction committed F-1 S-272B Ke·0 D·23 T·17.578291ms
+15:43:44.722506 table@remove removed @112
+=============== Apr 21, 2023 (+07) ===============
+15:49:15.192496 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:49:15.192774 version@stat F·[0 1] S·1MiB[0B 1MiB] Sc·[0.00 0.01]
+15:49:15.192796 db@open opening
+15:49:15.192857 journal@recovery F·1
+15:49:15.193034 journal@recovery recovering @114
+15:49:15.200805 memdb@flush created L0@117 N·1902 S·270KiB "BH:..2f0,v9614":"blo..ore,v8513"
+15:49:15.200993 version@stat F·[1 1] S·1MiB[270KiB 1MiB] Sc·[0.25 0.01]
+15:49:15.213757 db@janitor F·5 G·1
+15:49:15.213768 db@janitor removing table-113
+15:49:15.213828 db@open done T·21.024334ms
+15:49:15.255660 table@compaction L0·1 -> L1·1 S·1MiB Q·10410
+15:49:15.276579 table@build created L1@120 N·8661 S·1MiB "BH:..62f,v495":"blo..ore,v10409"
+15:49:15.276599 version@stat F·[0 1] S·1MiB[0B 1MiB] Sc·[0.00 0.01]
+15:49:15.279567 table@compaction committed F-1 S+775B Ke·0 D·317 T·23.892499ms
+15:49:15.279703 table@remove removed @116

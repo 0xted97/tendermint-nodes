@@ -180,7 +180,7 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 
 		}
 		break
-	case "/GetShare":
+	case "/GetReceiveShares":
 		index := string(reqQuery.Data)
 		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.ReceiveShares) {
 			receiveShares, err := json.Marshal(app.state.ReceiveShares[indexInt])
@@ -195,6 +195,18 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 				resQuery.Log = "success"
 			}
 
+		} else {
+			resQuery.Code = 1
+			resQuery.Log = "invalid index"
+		}
+		break
+	case "/GetSecretShare":
+		index := string(reqQuery.Data)
+		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.SecretShare) {
+			resQuery.Key = reqQuery.Data
+			resQuery.Value = app.state.SecretShare[indexInt]
+			resQuery.Code = 0
+			resQuery.Log = "success"
 		} else {
 			resQuery.Code = 1
 			resQuery.Log = "invalid index"
