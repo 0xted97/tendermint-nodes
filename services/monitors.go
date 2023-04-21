@@ -7,7 +7,7 @@ import (
 	"github.com/me/dkg-node/config"
 )
 
-func NodeListMonitor(tickerChan <-chan time.Time, p2pService *P2PService, idleConnsClosed chan struct{}) {
+func NodeListMonitor(tickerChan <-chan time.Time, p2pService *P2PService, establishConnection chan bool) {
 	for range tickerChan {
 		nodeList := *config.NodeList
 		if len(nodeList) != config.GlobalConfig.NumberOfNodes {
@@ -28,6 +28,6 @@ func NodeListMonitor(tickerChan <-chan time.Time, p2pService *P2PService, idleCo
 			continue
 		}
 		fmt.Println("Connected Nodes length is equal to eth list length")
-		<-idleConnsClosed
+		establishConnection <- true
 	}
 }

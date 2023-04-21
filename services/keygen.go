@@ -42,7 +42,7 @@ func (k *KeyGenService) InjectServices(p2p *P2PService, abciApp *ABCIApp) {
 func (k *KeyGenService) Initialize() {
 	k.p2p.host.SetStreamHandler(protocol.ID(dkgSendProtocolID), k.handleDKGSendStream)
 
-	k.GenerateAndSendShares()
+	// k.GenerateAndSendShares()
 }
 
 func (k *KeyGenService) OnStart() error {
@@ -56,7 +56,6 @@ func (k *KeyGenService) OnStart() error {
 }
 
 func (k *KeyGenService) handleDKGSendStream(stream network.Stream) {
-	fmt.Printf("stream: %v\n", stream)
 	defer stream.Close()
 	buf := make([]byte, 128)
 	n, err := stream.Read(buf)
@@ -70,7 +69,7 @@ func (k *KeyGenService) handleDKGSendStream(stream network.Stream) {
 		return
 	}
 	k.abciApp.state.ReceiveShares[share.ID] = []Share{share}
-	fmt.Printf("share: %v\n", share)
+	fmt.Printf("share: %v\n", share.ID)
 }
 
 func (k *KeyGenService) GenerateAndSendShares() error {

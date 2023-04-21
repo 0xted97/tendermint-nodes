@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 )
 
@@ -22,7 +21,6 @@ type Config struct {
 }
 
 func LoadConfig(path string) (*Config, error) {
-	fmt.Printf("path: %v\n", path)
 	// Read the file content
 	data, err := ioutil.ReadFile(path)
 	if err != nil {

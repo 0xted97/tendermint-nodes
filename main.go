@@ -24,7 +24,6 @@ func main() {
 	ctx := context.Background()
 
 	// Load config
-	fmt.Printf("path: %v\n", path)
 	globalConfig, err := config.LoadConfig(path)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading config: %v", err)
@@ -56,25 +55,25 @@ func main() {
 
 	// Initialize all necessary channels
 	nodeListMonitorTicker := time.NewTicker(5 * time.Second)
-	idleConnsClosed := make(chan struct{})
+	establishConnection := make(chan bool)
 
-	go services.NodeListMonitor(nodeListMonitorTicker.C, p2pService, idleConnsClosed)
+	go services.NodeListMonitor(nodeListMonitorTicker.C, p2pService, establishConnection)
+	<-establishConnection
+
+	keyGenService.GenerateAndSendShares()
+	// Stop NodeList monitor ticker
+	nodeListMonitorTicker.Stop()
+
+	// Exit the blocking chan
+	close(establishConnection)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
-	go func() {
-		<-c
-		// Stop NodeList monitor ticker
-		nodeListMonitorTicker.Stop()
-		// Exit the blocking chan
-		close(idleConnsClosed)
-	}()
+	<-c
 
 	err = compositeService.OnStop()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not stop composite service:%v", err)
 	}
-	<-idleConnsClosed
 	os.Exit(0)
 }
