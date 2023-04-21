@@ -36,8 +36,9 @@ type State struct {
 	LastUnassignedIndex int `json:"last_unassigned_index"`
 	LastCreatedIndex    int
 	NewKeyAssignments   map[int]KeyAssignmentPublic `json:"new_key_assignments"`
-	SecretShare         [][]byte                    `json:"secret_share"`
+	SecretShare         map[int][]byte              `json:"secret_share"`
 	ReceiveShares       map[int][]Share             `json:"receive_shares"`
+	ReceivePublicKeys   map[int][][]byte            `json:"receive_publickeys"`
 }
 
 type ABCIApp struct {
@@ -68,8 +69,9 @@ func (ABCIService) NewABCIApp() *ABCIApp {
 			LastUnassignedIndex: 0,
 			LastCreatedIndex:    0,
 			NewKeyAssignments:   make(map[int]KeyAssignmentPublic),
-			SecretShare:         [][]byte{},
+			SecretShare:         make(map[int][]byte),
 			ReceiveShares:       make(map[int][]Share),
+			ReceivePublicKeys:   make(map[int][][]byte),
 		},
 	}
 }
@@ -163,7 +165,6 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 			resQuery.Log = fmt.Sprintf("error unmarshalling query: %v", err)
 		}
 		keyIndex := app.getKeyIndex(verifierID, verifier)
-		fmt.Printf("keyIndex: %v\n", keyIndex)
 		if keyIndex < 0 {
 			resQuery.Code = 1
 			resQuery.Log = fmt.Sprintf("error key not found")
@@ -184,7 +185,6 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 		index := string(reqQuery.Data)
 		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.ReceiveShares) {
 			receiveShares, err := json.Marshal(app.state.ReceiveShares[indexInt])
-			fmt.Printf("receiveShares: %v\n", receiveShares)
 			if err != nil {
 				resQuery.Code = 1
 				resQuery.Log = fmt.Sprintf("error marshalling key assignment: %v", err)
@@ -203,6 +203,7 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 	case "/GetSecretShare":
 		index := string(reqQuery.Data)
 		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.SecretShare) {
+			fmt.Printf("app.state.ReceivePublicKeys[indexInt]: %v\n", app.state.ReceivePublicKeys[indexInt])
 			resQuery.Key = reqQuery.Data
 			resQuery.Value = app.state.SecretShare[indexInt]
 			resQuery.Code = 0
