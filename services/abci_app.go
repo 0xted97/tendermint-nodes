@@ -60,30 +60,34 @@ func (app *ABCIApp) getKeyIndex(verifierID string, verifier string) int {
 	return -1
 }
 
-func (ABCIService) NewABCIApp() (*ABCIApp, error) {
+func (a *ABCIService) NewABCIApp() (*ABCIApp, error) {
 	db, err := badger.Open(badger.DefaultOptions(config.GlobalConfig.DatabasePath))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to open badger db: %v", err)
 		os.Exit(1)
 	}
-	defer db.Close()
+	// Have to close database in main function
+	// defer db.Close()
 
-	state, err := LoadState(db)
-	if err != nil {
-		return nil, err
+	state, existed := LoadState(db)
+	if !existed {
+		return &ABCIApp{
+			db: db,
+			state: &State{
+				LastUnassignedIndex: 0,
+				LastCreatedIndex:    0,
+				NewKeyAssignments:   make(map[int]KeyAssignmentPublic),
+				SecretShare:         make(map[int][]byte),
+				ReceiveShares:       make(map[int][]Share),
+				SentShares:          make(map[int][]Share),
+				ReceivePublicKeys:   make(map[int][][]byte),
+			},
+		}, nil
 	}
 
 	return &ABCIApp{
-		db: db,
-		state: &State{
-			LastUnassignedIndex: 0,
-			LastCreatedIndex:    0,
-			NewKeyAssignments:   make(map[int]KeyAssignmentPublic),
-			SecretShare:         make(map[int][]byte),
-			ReceiveShares:       make(map[int][]Share),
-			SentShares:          make(map[int][]Share),
-			ReceivePublicKeys:   make(map[int][][]byte),
-		},
+		db:    db,
+		state: &state,
 	}, nil
 }
 
@@ -142,6 +146,10 @@ func (app *ABCIApp) CheckTx(req abcitypes.RequestCheckTx) abcitypes.ResponseChec
 }
 
 func (app *ABCIApp) Commit() abcitypes.ResponseCommit {
+
+	// Save state after assign new key success
+	// app.SaveState()
+
 	return abcitypes.ResponseCommit{Data: []byte{}}
 }
 
@@ -285,34 +293,37 @@ func (app *ABCIApp) InsertShare() {
 
 // SaveState -
 func (app *ABCIApp) SaveState() error {
-	return app.db.Update(func(txn *badger.Txn) error {
+	err := app.db.Update(func(txn *badger.Txn) error {
 		serializedState, err := json.Marshal(app.state)
 		if err != nil {
 			return err
 		}
-
 		return txn.Set([]byte(stateKey), serializedState)
 	})
+	return err
 }
 
 // SaveState
-func LoadState(db *badger.DB) (*State, error) {
+func LoadState(db *badger.DB) (State, bool) {
+	exist := false
 	var state State
-
 	err := db.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte(stateKey))
 		if err != nil {
 			return err
 		}
-
 		return item.Value(func(val []byte) error {
+			if len(val) <= 0 {
+				exist = false
+				return nil
+			}
+			exist = true
 			return json.Unmarshal(val, &state)
 		})
 	})
 
 	if err != nil {
-		return nil, err
+		return State{}, false
 	}
-
-	return &state, nil
+	return state, exist
 }

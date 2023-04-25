@@ -74,8 +74,9 @@ func (k *KeyGenService) handleDKGSendStream(stream network.Stream) {
 	}
 	shares := k.abciApp.state.ReceiveShares[keyGenMessage.ID]
 	k.abciApp.state.ReceiveShares[keyGenMessage.ID] = append(shares, keyGenMessage.Share)
-
 	k.abciApp.state.ReceivePublicKeys[keyGenMessage.ID] = append(k.abciApp.state.ReceivePublicKeys[keyGenMessage.ID], keyGenMessage.PublicKey)
+
+	k.abciApp.SaveState()
 }
 
 func (k *KeyGenService) GenerateAndSendShares() error {
@@ -114,6 +115,8 @@ func (k *KeyGenService) GenerateAndSendShares() error {
 		}
 		k.abciApp.state.SecretShare[si] = secret
 	}
+	// Save state
+	k.abciApp.SaveState()
 	return nil
 }
 
