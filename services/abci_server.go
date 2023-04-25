@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"os"
 
@@ -26,8 +25,7 @@ func (a *ABCIService) Name() string {
 	return "abci"
 }
 func (a *ABCIService) OnStart() error {
-	a.ABCIApp = a.NewABCIApp()
-	flag.Parse()
+	a.ABCIApp, _ = a.NewABCIApp()
 	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 
 	socketAddr := config.GlobalConfig.SocketServerPort

@@ -15,6 +15,10 @@ import (
 	"github.com/tendermint/tendermint/version"
 )
 
+var (
+	stateKey = []byte("stateKey")
+)
+
 type VerifyPair struct {
 	Verifier   string `json:"verifier"`
 	VerifierID string `json:"verifierID"`
@@ -55,13 +59,19 @@ func (app *ABCIApp) getKeyIndex(verifierID string, verifier string) int {
 	return -1
 }
 
-func (ABCIService) NewABCIApp() *ABCIApp {
+func (ABCIService) NewABCIApp() (*ABCIApp, error) {
 	db, err := badger.Open(badger.DefaultOptions(config.GlobalConfig.DatabasePath))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to open badger db: %v", err)
 		os.Exit(1)
 	}
 	defer db.Close()
+
+	state, err := LoadState(db)
+	fmt.Printf("state: %v\n", state)
+	if err != nil {
+		return nil, err
+	}
 
 	return &ABCIApp{
 		db: db,
@@ -73,7 +83,7 @@ func (ABCIService) NewABCIApp() *ABCIApp {
 			ReceiveShares:       make(map[int][]Share),
 			ReceivePublicKeys:   make(map[int][][]byte),
 		},
-	}
+	}, nil
 }
 
 func (app *ABCIApp) Info(req abcitypes.RequestInfo) abcitypes.ResponseInfo {
@@ -185,6 +195,10 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 		index := string(reqQuery.Data)
 		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.ReceiveShares) {
 			receiveShares, err := json.Marshal(app.state.ReceiveShares[indexInt])
+			publicKey, err := CombinePublicKey(app.state.ReceivePublicKeys[indexInt])
+			if err == nil {
+				fmt.Printf("publicKey: %v\n", publicKey)
+			}
 			if err != nil {
 				resQuery.Code = 1
 				resQuery.Log = fmt.Sprintf("error marshalling key assignment: %v", err)
@@ -203,7 +217,6 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 	case "/GetSecretShare":
 		index := string(reqQuery.Data)
 		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.SecretShare) {
-			fmt.Printf("app.state.ReceivePublicKeys[indexInt]: %v\n", app.state.ReceivePublicKeys[indexInt])
 			resQuery.Key = reqQuery.Data
 			resQuery.Value = app.state.SecretShare[indexInt]
 			resQuery.Code = 0
@@ -267,4 +280,38 @@ func (app *ABCIApp) isValid(tx []byte) (code uint32) {
 // Functions custom more
 func (app *ABCIApp) InsertShare() {
 
+}
+
+// SaveState -
+func (app *ABCIApp) SaveState() error {
+	return app.db.Update(func(txn *badger.Txn) error {
+		serializedState, err := json.Marshal(app.state)
+		if err != nil {
+			return err
+		}
+
+		return txn.Set([]byte(stateKey), serializedState)
+	})
+}
+
+// SaveState
+func LoadState(db *badger.DB) (*State, error) {
+	var state State
+
+	err := db.View(func(txn *badger.Txn) error {
+		item, err := txn.Get([]byte(stateKey))
+		if err != nil {
+			return err
+		}
+
+		return item.Value(func(val []byte) error {
+			return json.Unmarshal(val, &state)
+		})
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &state, nil
 }
