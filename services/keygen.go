@@ -83,13 +83,14 @@ func (k *KeyGenService) GenerateAndSendShares() error {
 		secret, publicKey, shares, _ := GenerateShares(k.dkg.n, k.dkg.t)
 		for i, peer := range k.p2p.peers {
 			node := k.p2p.peersDetail[i]
+			share := Share{
+				NodeIndex: node.Index,
+				Share:     shares[node.Index],
+			}
 			keyGenMessage := KeyGenMessage{
 				ID:        si,
 				PublicKey: publicKey,
-				Share: Share{
-					NodeIndex: node.Index,
-					Share:     shares[node.Index],
-				},
+				Share:     share,
 			}
 
 			keyGenMessageByte, err := json.Marshal(keyGenMessage)
@@ -99,10 +100,14 @@ func (k *KeyGenService) GenerateAndSendShares() error {
 			if node.Self {
 				// Set my secret
 				shares := k.abciApp.state.ReceiveShares[keyGenMessage.ID]
-				k.abciApp.state.ReceiveShares[keyGenMessage.ID] = append(shares, keyGenMessage.Share)
+				k.abciApp.state.ReceiveShares[keyGenMessage.ID] = append(shares, share)
 				k.abciApp.state.ReceivePublicKeys[keyGenMessage.ID] = append(k.abciApp.state.ReceivePublicKeys[keyGenMessage.ID], keyGenMessage.PublicKey)
 				continue
 			}
+
+			// Store share that sent to the other nodes
+			k.abciApp.state.SentShares[keyGenMessage.ID] = append(k.abciApp.state.SentShares[keyGenMessage.ID], share)
+
 			if err := k.p2p.SendMessage(peer.ID, dkgSendProtocolID, keyGenMessageByte); err != nil {
 				return fmt.Errorf("failed to send DKG share to node %d: %w", i, err)
 			}
@@ -112,6 +117,6 @@ func (k *KeyGenService) GenerateAndSendShares() error {
 	return nil
 }
 
-func (p *KeyGenService) OnStop() error {
+func (k *KeyGenService) OnStop() error {
 	return nil
 }

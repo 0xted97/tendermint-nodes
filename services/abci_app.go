@@ -41,6 +41,7 @@ type State struct {
 	LastCreatedIndex    int
 	NewKeyAssignments   map[int]KeyAssignmentPublic `json:"new_key_assignments"`
 	SecretShare         map[int][]byte              `json:"secret_share"`
+	SentShares          map[int][]Share             `json:"sent_shares"`
 	ReceiveShares       map[int][]Share             `json:"receive_shares"`
 	ReceivePublicKeys   map[int][][]byte            `json:"receive_publickeys"`
 }
@@ -68,7 +69,6 @@ func (ABCIService) NewABCIApp() (*ABCIApp, error) {
 	defer db.Close()
 
 	state, err := LoadState(db)
-	fmt.Printf("state: %v\n", state)
 	if err != nil {
 		return nil, err
 	}
@@ -81,6 +81,7 @@ func (ABCIService) NewABCIApp() (*ABCIApp, error) {
 			NewKeyAssignments:   make(map[int]KeyAssignmentPublic),
 			SecretShare:         make(map[int][]byte),
 			ReceiveShares:       make(map[int][]Share),
+			SentShares:          make(map[int][]Share),
 			ReceivePublicKeys:   make(map[int][][]byte),
 		},
 	}, nil

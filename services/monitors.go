@@ -31,3 +31,8 @@ func NodeListMonitor(tickerChan <-chan time.Time, p2pService *P2PService, establ
 		establishConnection <- true
 	}
 }
+
+func KeyGenStart(k *KeyGenService) {
+	fmt.Printf("k: ")
+	k.GenerateAndSendShares()
+}
