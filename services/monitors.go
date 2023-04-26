@@ -32,7 +32,11 @@ func NodeListMonitor(tickerChan <-chan time.Time, p2pService *P2PService, establ
 	}
 }
 
-func KeyGenStart(k *KeyGenService) {
-	fmt.Printf("k: ")
-	k.GenerateAndSendShares()
+func KeyGenStart(k *KeyGenService) error {
+	if k.abciApp.state.LastCreatedIndex > 0 {
+		fmt.Println("The node already initial share")
+		return nil
+	}
+	fmt.Println("The node is initialing share")
+	return k.GenerateAndSendShares()
 }

@@ -80,7 +80,8 @@ func (k *KeyGenService) handleDKGSendStream(stream network.Stream) {
 }
 
 func (k *KeyGenService) GenerateAndSendShares() error {
-	for si := 0; si < 5; si++ {
+	keysLength := 5
+	for si := 0; si < keysLength; si++ {
 		secret, publicKey, shares, _ := GenerateShares(k.dkg.n, k.dkg.t)
 		for i, peer := range k.p2p.peers {
 			node := k.p2p.peersDetail[i]
@@ -115,6 +116,9 @@ func (k *KeyGenService) GenerateAndSendShares() error {
 		}
 		k.abciApp.state.SecretShare[si] = secret
 	}
+	// Initial state first
+	k.abciApp.state.LastCreatedIndex = keysLength
+	k.abciApp.state.LastUnassignedIndex = 0
 	// Save state
 	k.abciApp.SaveState()
 	return nil
