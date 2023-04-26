@@ -12,9 +12,8 @@ func CreateDirectory(dirName string) bool {
 		}
 		return true
 	}
-
 	if src.Mode().IsRegular() {
 		return false
 	}
-	return false
+	return true
 }
