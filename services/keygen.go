@@ -104,15 +104,13 @@ func (k *KeyGenService) GenerateAndSendShares() error {
 				shares := k.abciApp.state.ReceiveShares[keyGenMessage.ID]
 				k.abciApp.state.ReceiveShares[keyGenMessage.ID] = append(shares, share)
 				k.abciApp.state.ReceivePublicKeys[keyGenMessage.ID] = append(k.abciApp.state.ReceivePublicKeys[keyGenMessage.ID], keyGenMessage.PublicKey)
-				continue
+			} else {
+				if err := k.p2p.SendMessage(peer.ID, dkgSendProtocolID, keyGenMessageByte); err != nil {
+					return fmt.Errorf("failed to send DKG share to node %d: %w", i, err)
+				}
 			}
-
 			// Store share that sent to the other nodes
 			k.abciApp.state.SentShares[keyGenMessage.ID] = append(k.abciApp.state.SentShares[keyGenMessage.ID], share)
-
-			if err := k.p2p.SendMessage(peer.ID, dkgSendProtocolID, keyGenMessageByte); err != nil {
-				return fmt.Errorf("failed to send DKG share to node %d: %w", i, err)
-			}
 		}
 		k.abciApp.state.SecretShare[si] = secret
 	}

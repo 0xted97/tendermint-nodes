@@ -118,10 +118,14 @@ func InitializeDKG(n int, t int) *DKG {
 	}
 }
 func TestPublicKey() error {
-	priv1, public1, _, _ := GenerateShares(3, 2)
-	priv2, public2, _, _ := GenerateShares(3, 2)
-	priv3, public3, _, _ := GenerateShares(3, 2)
+	_, public1, _, _ := GenerateShares(3, 2)
+	_, public2, _, _ := GenerateShares(3, 2)
+	_, public3, _, _ := GenerateShares(3, 2)
 	var pubs = [][]byte{public1, public2, public3}
+	fmt.Printf("public1: %v\n", hex.EncodeToString(public1))
+	fmt.Printf("public2: %v\n", hex.EncodeToString(public2))
+	fmt.Printf("public3: %v\n", hex.EncodeToString(public3))
+
 	public, err := CombinePublicKey(pubs)
 	fmt.Printf("err: %v\n", err)
 	if err != nil {
@@ -130,9 +134,9 @@ func TestPublicKey() error {
 	fmt.Printf("public: %v\n", public)
 	fmt.Printf("hex.EncodeToString(public): %v\n", hex.EncodeToString(public))
 
-	var prvis = [][]byte{priv1, priv2, priv3}
-	priv, err := CombineSecrets(prvis)
-	fmt.Printf("hex.EncodeToString(priv): %v\n", hex.EncodeToString(priv))
+	// var prvis = [][]byte{priv1, priv2, priv3}
+	// priv, err := CombineSecrets(prvis)
+	// fmt.Printf("hex.EncodeToString(priv): %v\n", hex.EncodeToString(priv))
 	return nil
 }
 

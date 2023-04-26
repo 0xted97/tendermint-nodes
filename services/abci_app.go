@@ -61,6 +61,7 @@ func (app *ABCIApp) getKeyIndex(verifierID string, verifier string) int {
 }
 
 func (a *ABCIService) NewABCIApp() (*ABCIApp, error) {
+	// Create folder before
 	db, err := badger.Open(badger.DefaultOptions(config.GlobalConfig.DatabasePath))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to open badger db: %v", err)
@@ -204,10 +205,11 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 		index := string(reqQuery.Data)
 		if indexInt, err := strconv.Atoi(index); err == nil && indexInt >= 0 && indexInt < len(app.state.ReceiveShares) {
 			receiveShares, err := json.Marshal(app.state.ReceiveShares[indexInt])
-			publicKey, err := CombinePublicKey(app.state.ReceivePublicKeys[indexInt])
-			if err == nil {
-				fmt.Printf("publicKey: %v\n", publicKey)
-			}
+			// publicKey, err := CombinePublicKey(app.state.ReceivePublicKeys[indexInt])
+			// if err != nil {
+			// 	fmt.Printf("err: %v\n", err)
+			// }
+			// fmt.Printf("publicKey: %v\n", publicKey)
 			if err != nil {
 				resQuery.Code = 1
 				resQuery.Log = fmt.Sprintf("error marshalling key assignment: %v", err)
