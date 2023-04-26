@@ -11,6 +11,7 @@ import (
 
 	"github.com/dgraph-io/badger"
 	"github.com/me/dkg-node/config"
+	utils "github.com/me/dkg-node/utils"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/version"
 )
@@ -62,6 +63,11 @@ func (app *ABCIApp) getKeyIndex(verifierID string, verifier string) int {
 
 func (a *ABCIService) NewABCIApp() (*ABCIApp, error) {
 	// Create folder before
+	done := utils.CreateDirectory(config.GlobalConfig.DatabasePath)
+	if !done {
+		fmt.Fprintf(os.Stderr, "failed to mkdir folder")
+		os.Exit(1)
+	}
 	db, err := badger.Open(badger.DefaultOptions(config.GlobalConfig.DatabasePath))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to open badger db: %v", err)
