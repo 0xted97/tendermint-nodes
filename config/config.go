@@ -18,6 +18,7 @@ type Config struct {
 	NodePrivateKey string `json:"nodePrivateKey" env:"NODE_PRIVATE_KEY"`
 
 	NumberOfNodes int `json:"numberOfNodes" env:"NUMBER_OF_NODES"`
+	KeysPerEpoch  int `json:"keysPerEpoch" env:"KEYS_PER_EPOCH"`
 }
 
 func LoadConfig(path string) (*Config, error) {

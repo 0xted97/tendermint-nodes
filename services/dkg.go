@@ -48,7 +48,7 @@ func DecodeShare(encodedShare []byte) (Share, error) {
 	return shareData, nil
 }
 
-func CombinePublicFromSecrets(secrets [][]byte) (ecdsa.PublicKey, error) {
+func CombineSecrets(secrets [][]byte) (ecdsa.PrivateKey, ecdsa.PublicKey, error) {
 	// Convert each secret to an ECDSA private key
 	privateKeys := make([]*ecdsa.PrivateKey, len(secrets))
 	// publicKeys := make([]*ecdsa.PublicKey, len(secrets))
@@ -56,13 +56,13 @@ func CombinePublicFromSecrets(secrets [][]byte) (ecdsa.PublicKey, error) {
 	for i, secret := range secrets {
 		privateKey, err := crypto.ToECDSA(secret)
 		if err != nil {
-			return ecdsa.PublicKey{}, err
+			return ecdsa.PrivateKey{}, ecdsa.PublicKey{}, err
 		}
 		privateKeys[i] = privateKey
 	}
 
 	// Add the private keys together
-	totalPrivateKey := &ecdsa.PrivateKey{
+	totalPrivateKey := ecdsa.PrivateKey{
 		PublicKey: ecdsa.PublicKey{
 			Curve: crypto.S256(),
 		},
@@ -76,7 +76,7 @@ func CombinePublicFromSecrets(secrets [][]byte) (ecdsa.PublicKey, error) {
 	// totalPrivateKey.D = totalPrivateKey.D.Mod(totalPrivateKey.D, crypto.S256().Params().N)
 	totalPrivateKey.PublicKey.X, totalPrivateKey.PublicKey.Y = totalPrivateKey.PublicKey.Curve.ScalarBaseMult(totalPrivateKey.D.Bytes())
 	totalPublicKey := totalPrivateKey.PublicKey
-	return totalPublicKey, nil
+	return totalPrivateKey, totalPublicKey, nil
 }
 
 func CombinePublicKey(publicKeys [][]byte) (ecdsa.PublicKey, error) {
@@ -122,7 +122,7 @@ func TestPublicKey() error {
 	priv3, public3, _, _ := GenerateShares(3, 2)
 
 	var prvis = [][]byte{priv1, priv2, priv3}
-	p1, err := CombinePublicFromSecrets(prvis)
+	_, p1, err := CombineSecrets(prvis)
 	if err != nil {
 		return err
 	}

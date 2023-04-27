@@ -9,6 +9,7 @@ import (
 
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/protocol"
+	"github.com/me/dkg-node/config"
 )
 
 const (
@@ -80,7 +81,7 @@ func (k *KeyGenService) handleDKGSendStream(stream network.Stream) {
 }
 
 func (k *KeyGenService) GenerateAndSendShares() error {
-	keysLength := 5
+	keysLength := config.GlobalConfig.KeysPerEpoch
 	for si := 0; si < keysLength; si++ {
 		secret, publicKey, shares, _ := GenerateShares(k.dkg.n, k.dkg.t)
 		for i, peer := range k.p2p.peers {
