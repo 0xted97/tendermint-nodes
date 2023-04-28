@@ -58,7 +58,7 @@ func main() {
 	establishConnection := make(chan bool)
 	services.TestPublicKey()
 
-	go services.SetUpAndRunHttpServer()
+	go services.SetUpJRPCHandler()
 	go services.NodeListMonitor(nodeListMonitorTicker.C, p2pService, establishConnection)
 	<-establishConnection
 	services.KeyGenStart(keyGenService)

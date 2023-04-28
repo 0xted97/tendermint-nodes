@@ -1,5 +1,7 @@
 package services
 
+import "reflect"
+
 type Service interface {
 	OnStart() error
 	OnStop() error
@@ -30,6 +32,15 @@ func (cs *CompositeService) OnStop() error {
 		err := service.OnStop()
 		if err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+func (cs *CompositeService) GetServiceByType(serviceType reflect.Type) Service {
+	for _, service := range cs.services {
+		if reflect.TypeOf(service) == serviceType {
+			return service
 		}
 	}
 	return nil

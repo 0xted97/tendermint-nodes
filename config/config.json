@@ -1,5 +1,5 @@
 {
-    "httpServerPort": "127.0.0.1:3000",
+    "httpServerPort": "3000",
     "p2pAddress": "/ip4/127.0.0.1/tcp/1080",
     "socketServerPort": "localhost:26658",
     "databasePath": "./tmp/badge",
