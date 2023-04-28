@@ -94,5 +94,6 @@ func SetUpJRPCHandler() error {
 
 	router.Handle("/jrpc", server)
 	http.ListenAndServe(":"+httpPort, router)
+
 	return nil
 }
