@@ -15,12 +15,10 @@ const (
 )
 
 type (
-	JrpcError struct {
+	JRPCError struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
-	}
-
-	AssignHandle struct {
+		Data    string `json:"data"`
 	}
 
 	AssignRequest struct {
@@ -32,51 +30,51 @@ type (
 		Status bool `json:"status"`
 		Total  int  `json:"total"`
 	}
+
+	LookupRequest struct {
+		Verifier   string `json:"verifier"`
+		VerifierID string `json:"verifier_id"`
+	}
+
+	LookupResponse struct {
+	}
+
+	CommitmentRequest struct {
+		Verifier   string `json:"verifier"`
+		VerifierID string `json:"verifier_id"`
+		IdToken    string `json:"id_token"`
+	}
+
+	CommitmentResponse struct {
+		Signatures interface{} `json:signatures`
+	}
+
+	RetrieveRequest struct {
+		Verifier   string `json:"verifier"`
+		VerifierID string `json:"verifier_id"`
+		IdToken    string `json:"id_token"`
+	}
+
+	RetrieveResponse struct {
+		Shares []string `json:"shares"`
+	}
+
+	AddRequest struct {
+		A int `json:"A"`
+		B int `json:"B"`
+	}
+
+	AddResponse struct {
+		Total int `json:"total"`
+	}
 )
 
-func (e JrpcError) Error() string {
+func (e JRPCError) Error() string {
 	return fmt.Sprintf("%d: %s", e.Code, e.Message)
 }
 
-type Request struct {
-	Method string      `json:"method"`
-	Params interface{} `json:"params,omitempty"`
-	ID     uint64      `json:"id"`
-}
-
-// Response encloses result and error received from remote server
-type Response struct {
-	Result interface{} `json:"result,omitempty"`
-	ID     uint64      `json:"id"`
-}
-
-func (r Response) JRPCResponseSuccess() {
-
-}
-
-func (r Response) JRPCResponseError() {
-
-}
-
-type MyService struct {
+type JRPCApi struct {
 	state string
-}
-
-type Args struct {
-	A int `json:"A"`
-	B int `json:"B"`
-}
-
-func (s *MyService) Add(r *http.Request, args *Args, result *AssignResponse) error {
-	if args.A <= 0 || args.B <= 0 {
-		return JrpcError{Code: 3000, Message: "Invalid"}
-	}
-	result.Total = args.A + args.B
-	return nil
-}
-
-func (s *MyService) Ping(r *http.Request, args *struct{}, result *Response) error {
-	return nil
 }
 
 func SetUpJRPCHandler() error {
@@ -85,12 +83,11 @@ func SetUpJRPCHandler() error {
 
 	router := mux.NewRouter()
 	server := rpc.NewServer()
-
 	server.RegisterCodec(json.NewCodec(), "application/json")
 	server.RegisterCodec(json.NewCodec(), "application/json;charset=UTF-8")
 
-	myService := &MyService{state: "Test ne"}
-	server.RegisterService(myService, "")
+	jrpcApi := &JRPCApi{state: "Test ne"}
+	server.RegisterService(jrpcApi, "")
 
 	router.Handle("/jrpc", server)
 	http.ListenAndServe(":"+httpPort, router)
