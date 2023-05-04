@@ -8,21 +8,21 @@ import (
 func (s *JRPCApi) Assign(r *http.Request, args *AssignRequest, result *AssignResponse) error {
 	fmt.Printf("args: %v\n", args)
 	if args.VerifierID == "" {
-		return &JRPCError{Code: 32602, Message: "Input error", Data: "VerifierID is empty"}
+		return &JRPCError{Code: ErrorCodeInvalidParams, Message: "Input error", Data: "VerifierID is empty"}
 	}
 	return nil
 }
 
 func (s *JRPCApi) Lookup(r *http.Request, args *LookupRequest, result *LookupResponse) error {
 	if args.VerifierID == "" {
-		return &JRPCError{Code: 32602, Message: "Input error", Data: "VerifierID is empty"}
+		return &JRPCError{Code: ErrorCodeInvalidParams, Message: "Input error", Data: "VerifierID is empty"}
 	}
 	return nil
 }
 
 func (s *JRPCApi) Commitment(r *http.Request, args *CommitmentRequest, result *CommitmentResponse) error {
 	if args.VerifierID == "" {
-		return &JRPCError{Code: 32602, Message: "Input error", Data: "VerifierID is empty"}
+		return &JRPCError{Code: ErrorCodeInvalidParams, Message: "Input error", Data: "VerifierID is empty"}
 	}
 	return nil
 }
