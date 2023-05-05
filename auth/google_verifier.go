@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/me/dkg-node/config"
 )
 
 // GoogleAuthResponse - expected response body from google endpoint when checking submitted token
@@ -59,7 +61,6 @@ func (g *GoogleVerifier) VerifyRequestIdentity(rawPayload *json.RawMessage) (boo
 	if err := json.Unmarshal(*rawPayload, &p); err != nil {
 		return false, "", err
 	}
-
 	p.IDToken = g.CleanToken(p.IDToken)
 
 	if p.VerifierID == "" || p.IDToken == "" {
@@ -91,9 +92,9 @@ func (g *GoogleVerifier) VerifyRequestIdentity(rawPayload *json.RawMessage) (boo
 		return false, "", errors.New("timesigned is more than 60 seconds ago " + timeSigned.String())
 	}
 	// Compare client-secret id from google
-	// if strings.Compare(config.GlobalMutableConfig.GetS("GoogleClientID"), body.Azp) != 0 {
-	// 	return false, "", errors.New("azip is not clientID " + body.Azp + " " + config.GlobalMutableConfig.GetS("GoogleClientID"))
-	// }
+	if strings.Compare(config.GlobalConfig.GoogleClientID, body.Azp) != 0 {
+		return false, "", errors.New("azip is not clientID " + body.Azp + " " + config.GlobalConfig.GoogleClientID)
+	}
 	if strings.Compare(p.VerifierID, body.Email) != 0 {
 		return false, "", errors.New("email not equal to body.email " + p.VerifierID + " " + body.Email)
 	}
@@ -106,6 +107,6 @@ func NewGoogleVerifier() *GoogleVerifier {
 	return &GoogleVerifier{
 		Version:  "1.0",
 		Endpoint: "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=",
-		Timeout:  60 * time.Second,
+		Timeout:  600000 * time.Second, // Default 60s
 	}
 }

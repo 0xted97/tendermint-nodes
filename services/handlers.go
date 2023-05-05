@@ -53,9 +53,12 @@ type (
 	}
 
 	CommitmentRequest struct {
-		Verifier   string `json:"verifier"`
-		VerifierID string `json:"verifier_id"`
-		IdToken    string `json:"id_token"`
+		Verifier        string `json:"verifier"`
+		VerifierID      string `json:"verifier_id"`
+		MessagePrefix   string `json:"messageprefix"`
+		TokenCommitment string `json:"tokencommitment"`
+		TempPubX        string `json:"temppubx"`
+		TempPubY        string `json:"temppuby"`
 	}
 
 	CommitmentResponse struct {
@@ -65,7 +68,7 @@ type (
 	RetrieveRequest struct {
 		Verifier   string `json:"verifier"`
 		VerifierID string `json:"verifier_id"`
-		IdToken    string `json:"id_token"`
+		IDToken    string `json:"id_token"`
 	}
 
 	RetrieveResponse struct {

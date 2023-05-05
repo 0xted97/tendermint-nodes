@@ -3,7 +3,6 @@ package auth
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 )
 
 type Verifier interface {
@@ -23,7 +22,8 @@ type AuthService struct {
 }
 
 type VerifyMessage struct {
-	Token              string `json:"idtoken"`
+	Token              string `json:"id_token"`
+	VerifierID         string `json:"verifier_id"`
 	VerifierIdentifier string `json:"verifieridentifier"`
 }
 
@@ -71,7 +71,6 @@ func NewAuthService(verifiers []Verifier) GeneralVerifier {
 		Verifiers: make(map[string]Verifier),
 	}
 	for _, verifier := range verifiers {
-		fmt.Printf("verifier.GetIdentifier(): %v\n", verifier.GetIdentifier())
 		auth.Verifiers[verifier.GetIdentifier()] = verifier
 	}
 	return auth

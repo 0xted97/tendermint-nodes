@@ -19,6 +19,9 @@ type Config struct {
 
 	NumberOfNodes int `json:"numberOfNodes" env:"NUMBER_OF_NODES"`
 	KeysPerEpoch  int `json:"keysPerEpoch" env:"KEYS_PER_EPOCH"`
+
+	GoogleClientID     string `json:"googleClientId" env:"Google_Client_ID"`
+	GoogleClientSecret string `json:"googleClientSecret" env:"Google_Client_Secret"`
 }
 
 func LoadConfig(path string) (*Config, error) {
