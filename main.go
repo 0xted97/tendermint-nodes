@@ -42,8 +42,9 @@ func main() {
 	p2pService := services.NewP2PService(ctx)
 	keyGenService := services.NewKeyGenService(ctx)
 	verifierService := services.NewVerifierService(ctx)
+	bftClientService := services.NewBFTClientService(ctx)
 
-	compositeService := services.NewCompositeService(abciService, p2pService, keyGenService, verifierService)
+	compositeService := services.NewCompositeService(abciService, p2pService, keyGenService, verifierService, bftClientService)
 	// Start all services
 	err = compositeService.OnStart()
 	if err != nil {

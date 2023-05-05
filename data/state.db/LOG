@@ -1,0 +1,6 @@
+=============== May 5, 2023 (+07) ===============
+16:08:11.127978 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+16:08:11.134431 db@open opening
+16:08:11.134546 version@stat F·[] S·0B[] Sc·[]
+16:08:11.137453 db@janitor F·2 G·0
+16:08:11.137464 db@open done T·3.023208ms
