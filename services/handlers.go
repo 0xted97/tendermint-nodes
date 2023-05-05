@@ -5,22 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/rpc"
-	"github.com/gorilla/rpc/json"
+	"github.com/gorilla/rpc/v2"
 	"github.com/me/dkg-node/config"
-)
-
-const (
-	// ErrorCodeParse is parse error code.
-	ErrorCodeParse = -32700
-	// ErrorCodeInvalidRequest is invalid request error code.
-	ErrorCodeInvalidRequest = -32600
-	// ErrorCodeMethodNotFound is method not found error code.
-	ErrorCodeMethodNotFound = -32601
-	// ErrorCodeInvalidParams is invalid params error code.
-	ErrorCodeInvalidParams = -32602
-	// ErrorCodeInternal is internal error code.
-	ErrorCodeInternal = -32603
+	"github.com/me/dkg-node/jsonrpc"
 )
 
 const (
@@ -28,7 +15,7 @@ const (
 )
 
 type (
-	JRPCError struct {
+	CustomError struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 		Data    string `json:"data"`
@@ -85,12 +72,12 @@ type (
 	}
 )
 
-func (e JRPCError) Error() string {
-	return fmt.Sprintf("%d: %s", e.Code, e.Message)
-}
-
 type JRPCApi struct {
 	state string
+}
+
+type CustomCodec struct {
+	*jsonrpc.Codec
 }
 
 func SetUpJRPCHandler() error {
@@ -99,8 +86,8 @@ func SetUpJRPCHandler() error {
 
 	router := mux.NewRouter()
 	server := rpc.NewServer()
-	server.RegisterCodec(json.NewCodec(), "application/json")
-	server.RegisterCodec(json.NewCodec(), "application/json;charset=UTF-8")
+	server.RegisterCodec(jsonrpc.NewCodec(), "application/json")
+	server.RegisterCodec(jsonrpc.NewCodec(), "application/json;charset=UTF-8")
 
 	jrpcApi := &JRPCApi{state: "Test ne"}
 	server.RegisterService(jrpcApi, "")
