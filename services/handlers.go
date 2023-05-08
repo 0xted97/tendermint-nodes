@@ -1,13 +1,13 @@
 package services
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/rpc/v2"
 	"github.com/me/dkg-node/config"
 	"github.com/me/dkg-node/jsonrpc"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -82,8 +82,6 @@ type CustomCodec struct {
 
 func SetUpJRPCHandler() error {
 	httpPort := config.GlobalConfig.HttpServerPort
-	fmt.Println("Setting up JSON-RPC handler...")
-
 	router := mux.NewRouter()
 	server := rpc.NewServer()
 	server.RegisterCodec(jsonrpc.NewCodec(), "application/json")
@@ -93,6 +91,9 @@ func SetUpJRPCHandler() error {
 	server.RegisterService(jrpcApi, "")
 
 	router.Handle("/jrpc", server)
+	logrus.WithFields(logrus.Fields{
+		"Port": httpPort,
+	}).Info("Setting up JSON-RPC handler...")
 	http.ListenAndServe(":"+httpPort, router)
 
 	return nil

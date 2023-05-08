@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/me/dkg-node/config"
+	"github.com/sirupsen/logrus"
 	tmclient "github.com/tendermint/tendermint/rpc/client/http"
 )
 
@@ -43,6 +44,7 @@ func (bcs *BFTClientService) OnStop() error {
 func (bcs *BFTClientService) SendTransaction(tx []byte) error {
 	_, err := bcs.client.BroadcastTxSync(bcs.ctx, tx)
 	if err != nil {
+		logrus.WithError(err).Error("Failed to send transaction")
 		return err
 	}
 	return nil

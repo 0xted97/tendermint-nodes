@@ -11,12 +11,17 @@ import (
 
 	"github.com/me/dkg-node/config"
 	"github.com/me/dkg-node/services"
+	"github.com/sirupsen/logrus"
 )
 
 var path string
 
 func init() {
 	flag.StringVar(&path, "config-path", "./config/config.json", "config file")
+
+	logrus.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
 }
 
 func main() {
