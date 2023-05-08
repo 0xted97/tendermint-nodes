@@ -55,6 +55,10 @@ func (es *EthereumServiceImpl) OnStop() error {
 	return nil
 }
 
+func (es *EthereumServiceImpl) Name() string {
+	return "ethereum"
+}
+
 func (es *EthereumServiceImpl) GetSelfPrivateKey() *ecdsa.PrivateKey {
 	return es.NodePrivateKey
 }

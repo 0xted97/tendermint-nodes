@@ -86,6 +86,9 @@ type BFTClient interface {
 type BFTClientService struct {
 	ctx    context.Context
 	client *tmclient.HTTP
+
+	compositeService *CompositeService
+	ethereumService  *EthereumService
 }
 
 func NewBFTClientService(ctx context.Context) *BFTClientService {
@@ -107,6 +110,10 @@ func (bcs *BFTClientService) OnStart() error {
 func (bcs *BFTClientService) OnStop() error {
 	// Add code to stop the BFT client connection or perform any required cleanup.
 	return nil
+}
+
+func (bcs *BFTClientService) Name() string {
+	return "bft_client"
 }
 
 func (bcs *BFTClientService) SendTransaction(tx []byte) error {

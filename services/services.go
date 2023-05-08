@@ -1,19 +1,25 @@
 package services
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type Service interface {
+	Name() string
 	OnStart() error
 	OnStop() error
+	InjectServices() error
 }
 
 type CompositeService struct {
-	services []Service
+	services       []Service
+	servicesByName map[string]Service
 }
 
 func NewCompositeService(services ...Service) *CompositeService {
 	return &CompositeService{
-		services: services,
+		services:       services,
+		servicesByName: make(map[string]Service),
 	}
 }
 
@@ -23,6 +29,18 @@ func (cs *CompositeService) OnStart() error {
 		if err != nil {
 			return err
 		}
+		cs.servicesByName[service.Name()] = service
+	}
+	return nil
+}
+
+func (cs *CompositeService) Test() error {
+	for _, service := range cs.services {
+		err := service.OnStart()
+		if err != nil {
+			return err
+		}
+		cs.servicesByName[service.Name()] = service
 	}
 	return nil
 }
