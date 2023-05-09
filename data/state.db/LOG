@@ -4,3 +4,12 @@
 16:08:11.134546 version@stat F·[] S·0B[] Sc·[]
 16:08:11.137453 db@janitor F·2 G·0
 16:08:11.137464 db@open done T·3.023208ms
+=============== May 9, 2023 (+07) ===============
+21:20:36.154538 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+21:20:36.154840 version@stat F·[] S·0B[] Sc·[]
+21:20:36.154851 db@open opening
+21:20:36.154878 journal@recovery F·1
+21:20:36.154942 journal@recovery recovering @1
+21:20:36.155077 version@stat F·[] S·0B[] Sc·[]
+21:20:36.165237 db@janitor F·2 G·0
+21:20:36.165327 db@open done T·10.471291ms

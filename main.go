@@ -50,7 +50,7 @@ func main() {
 	ethereumService := services.NewEthereumService(ctx)
 	tendermintService := services.NewTendermintService(ctx)
 
-	compositeService := services.NewCompositeService(abciService, p2pService, keyGenService, verifierService, tendermintService, ethereumService)
+	compositeService := services.NewCompositeService(abciService, p2pService, keyGenService, verifierService, ethereumService, tendermintService)
 	// Start all services
 	err = compositeService.OnStart()
 	if err != nil {

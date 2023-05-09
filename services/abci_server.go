@@ -29,7 +29,7 @@ func (a *ABCIService) OnStart() error {
 	a.ABCIApp, _ = a.NewABCIApp()
 	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 
-	socketAddr := config.GlobalConfig.SocketServerPort
+	socketAddr := config.GlobalConfig.ABCIServer
 	server := abciserver.NewSocketServer(socketAddr, a.ABCIApp)
 
 	server.SetLogger(logger)

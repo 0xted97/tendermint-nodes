@@ -1,7 +1,7 @@
 {
     "httpServerPort": "3000",
     "p2pAddress": "/ip4/127.0.0.1/tcp/1080",
-    "socketServerPort": "localhost:26658",
+    "ABCIServer": "localhost:26658",
     "databasePath": "./tmp/badge",
 
     "ethAddress": "94bD9E312E33aB244970326Cf6173F3D9C3641d5",

@@ -10,13 +10,16 @@ import (
 	"github.com/me/dkg-node/config"
 	"github.com/sirupsen/logrus"
 	tmconfig "github.com/tendermint/tendermint/config"
+	tmsecp "github.com/tendermint/tendermint/crypto/secp256k1"
+	tmlog "github.com/tendermint/tendermint/libs/log"
 	tmnode "github.com/tendermint/tendermint/node"
 	tmp2p "github.com/tendermint/tendermint/p2p"
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 )
 
 type TendermintService struct {
-	ctx context.Context
+	ctx             context.Context
+	ethereumService EthereumService
 
 	tmNodeKey *tmp2p.NodeKey
 
@@ -81,7 +84,7 @@ func (t *TendermintService) OnStart() error {
 	t.tmNodeKey = tmNodeKey
 	t.bftRPC = nil
 	t.bftNode = nil
-	go startTendermintCore(t)
+	go startTendermintCore(t, tmRootPath)
 	go abciMonitor(t)
 	// t.bftRPCWS = nil
 	return nil
@@ -105,8 +108,46 @@ func abciMonitor(t *TendermintService) {
 	}
 }
 
-func startTendermintCore(t *TendermintService) {
-	// defaultTmConfig := tmconfig.DefaultConfig()
+func startTendermintCore(t *TendermintService, buildPath string) {
+	defaultTmConfig := tmconfig.DefaultConfig()
+	defaultTmConfig.SetRoot(buildPath)
+	defaultTmConfig.ProxyApp = config.GlobalConfig.ABCIServer
+	defaultTmConfig.Consensus.CreateEmptyBlocks = false
+	defaultTmConfig.BaseConfig.DBBackend = "badgerdb"
+	defaultTmConfig.FastSyncMode = false
+	defaultTmConfig.RPC.ListenAddress = config.GlobalConfig.BftUri
+
+	// pvEth := t.ethereumService.GetSelfPrivateKey()
+	// pvF := tmprivval.NewFilePV(defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
+	// fmt.Printf("pvEth: %v\n", pvEth)
+	// pvF.Save()
+	// pv := tmprivval.LoadFilePV(
+	// 	defaultTmConfig.PrivValidatorKeyFile(),
+	// 	defaultTmConfig.PrivValidatorStateFile(),
+	// )
+
+	// Set logger, it should use logrus instead default log of tendermint
+	var logger tmlog.Logger
+	logger = tmlog.NewTMLogger(logrus.New().Out)
+
+	tmconfig.WriteConfigFile(defaultTmConfig.RootDir+"/config/config.toml", defaultTmConfig)
+
+	//Initial Tendermint Node
+	n, err := tmnode.DefaultNewNode(defaultTmConfig, logger)
+
+	if err != nil {
+		logrus.WithError(err).Fatal("failed to create tendermint node")
+	}
+	t.bftNode = n
+	logrus.WithField("ListenAddress", defaultTmConfig.P2P.ListenAddress).Info("tendermint P2P Connection")
+	logrus.WithField("ListenAddress", defaultTmConfig.RPC.ListenAddress).Info("tendermint Node RPC listening")
+
+	//Start Tendermint Node
+	t.bftNode.Start()
+}
+
+func convertPrivateKey(ethPrivateKey []byte) ([]byte, error) {
+	return tmsecp.GenPrivKeySecp256k1(ethPrivateKey), nil
 }
 
 func (s *TendermintService) OnStop() error {

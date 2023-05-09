@@ -9,11 +9,11 @@ var GlobalConfig *Config
 var NodeList *([]NodeDetail)
 
 type Config struct {
-	HttpServerPort   string `json:"httpServerPort" env:"HTTP_SERVER_PORT"`
-	P2PAddress       string `json:"p2pAddress" env:"P2P_ADDRESS"`
-	BftUri           string `json:"bftUri" env:"BFT_URI"`
-	SocketServerPort string `json:"socketServerPort" env:"SOCKET_SERVER_PORT"`
-	DatabasePath     string `json:"databasePath" env:"DATABASE_PATH"`
+	HttpServerPort string `json:"httpServerPort" env:"HTTP_SERVER_PORT"`
+	P2PAddress     string `json:"p2pAddress" env:"P2P_ADDRESS"`
+	BftUri         string `json:"bftUri" env:"BFT_URI"`
+	ABCIServer     string `json:"abciServer" env:"SOCKET_SERVER_PORT"`
+	DatabasePath   string `json:"databasePath" env:"DATABASE_PATH"`
 
 	EthAddress     string `json:"ethAddress" env:"ETH_ADDRESS"`
 	NodePrivateKey string `json:"nodePrivateKey" env:"NODE_PRIVATE_KEY"`
