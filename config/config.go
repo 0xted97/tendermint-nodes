@@ -11,6 +11,7 @@ var NodeList *([]NodeDetail)
 type Config struct {
 	HttpServerPort   string `json:"httpServerPort" env:"HTTP_SERVER_PORT"`
 	P2PAddress       string `json:"p2pAddress" env:"P2P_ADDRESS"`
+	BftUri           string `json:"bftUri" env:"BFT_URI"`
 	SocketServerPort string `json:"socketServerPort" env:"SOCKET_SERVER_PORT"`
 	DatabasePath     string `json:"databasePath" env:"DATABASE_PATH"`
 
@@ -22,6 +23,8 @@ type Config struct {
 
 	GoogleClientID     string `json:"googleClientId" env:"GOOGLE_CLIENT_ID"`
 	GoogleClientSecret string `json:"googleClientSecret" env:"GOOGLE_CLIENT_SECRET"`
+
+	BasePath string `json:"basePath" env:"BASE_PATH"`
 }
 
 func LoadConfig(path string) (*Config, error) {

@@ -11,7 +11,6 @@ import (
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
-	"github.com/me/dkg-node/config"
 	"github.com/sirupsen/logrus"
 	tmclient "github.com/tendermint/tendermint/rpc/client/http"
 )
@@ -130,25 +129,12 @@ type BFTClientService struct {
 	ethereumService  *EthereumService
 }
 
-func NewBFTClientService(ctx context.Context) *BFTClientService {
+func NewBFTClientService(ctx context.Context, client *tmclient.HTTP) *BFTClientService {
+
 	return &BFTClientService{
-		ctx: ctx,
+		ctx:    ctx,
+		client: client,
 	}
-}
-
-func (bcs *BFTClientService) OnStart() error {
-	client, err := tmclient.New(config.GlobalConfig.SocketServerPort, "/websocket")
-	if err != nil {
-		return err
-	}
-
-	bcs.client = client
-	return nil
-}
-
-func (bcs *BFTClientService) OnStop() error {
-	// Add code to stop the BFT client connection or perform any required cleanup.
-	return nil
 }
 
 func (bcs *BFTClientService) Name() string {

@@ -855,3 +855,12 @@
 16:10:12.741363 version@stat F·[0 1] S·39KiB[0B 39KiB] Sc·[0.00 0.00]
 16:10:12.750530 db@janitor F·3 G·0
 16:10:12.750544 db@open done T·9.507417ms
+=============== May 9, 2023 (+07) ===============
+16:59:11.365759 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+16:59:11.366031 version@stat F·[0 1] S·39KiB[0B 39KiB] Sc·[0.00 0.00]
+16:59:11.366042 db@open opening
+16:59:11.366081 journal@recovery F·1
+16:59:11.366137 journal@recovery recovering @198
+16:59:11.366260 version@stat F·[0 1] S·39KiB[0B 39KiB] Sc·[0.00 0.00]
+16:59:11.377429 db@janitor F·3 G·0
+16:59:11.377442 db@open done T·11.394125ms
