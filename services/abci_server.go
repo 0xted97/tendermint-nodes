@@ -24,6 +24,7 @@ func NewABCIService(ctx context.Context) *ABCIService {
 func (a *ABCIService) Name() string {
 	return "abci"
 }
+
 func (a *ABCIService) OnStart() error {
 	a.ABCIApp, _ = a.NewABCIApp()
 	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))

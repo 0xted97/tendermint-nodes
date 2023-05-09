@@ -2,7 +2,7 @@ package services
 
 import (
 	"crypto/ecdsa"
-	"math/big"
+	"reflect"
 
 	"context"
 	"crypto/rand"
@@ -30,9 +30,29 @@ type DefaultBFTTxWrapper struct {
 	Signature []byte          `json:"signature,omitempty"`
 }
 
+type AssignmentBFTTx struct {
+	Verifier   string
+	VerifierID string
+}
+
+// mapping of name of struct to id
+var bftTxs = map[string]byte{
+	getType(AssignmentBFTTx{}): byte(1),
+	// getType(keygennofsm.KeygenMessage{}): byte(2),
+	// getType(pss.PSSMessage{}):            byte(3),
+	// getType(mapping.MappingMessage{}):    byte(4),
+	// getType(dealer.Message{}):            byte(5),
+}
+
 func (wrapper *DefaultBFTTxWrapper) PrepareBFTTx(bftTx interface{}) ([]byte, error) {
 	// Implement the logic to prepare the BFT transaction
-
+	// type byte
+	msgType, ok := bftTxs[getType(bftTx)]
+	fmt.Printf("msgType: %v\n", msgType)
+	if !ok {
+		return nil, fmt.Errorf("Msg type does not exist for BFT: %s ", getType(bftTx))
+	}
+	wrapper.MsgType = msgType
 	// Generate nonce
 	nonce, err := rand.Int(rand.Reader, secp256k1.S256().N)
 	if err != nil {
@@ -40,8 +60,11 @@ func (wrapper *DefaultBFTTxWrapper) PrepareBFTTx(bftTx interface{}) ([]byte, err
 	}
 	wrapper.Nonce = uint32(nonce.Int64())
 	// Set public key this node, to the rest of node can verify signature
-	wrapper.PubKey.X = &big.Int{}
-	wrapper.PubKey.Y = &big.Int{}
+
+	fmt.Printf("reflect.TypeOf((*EthereumServiceImpl)(nil)): %v\n", reflect.TypeOf((*EthereumServiceImpl)(nil)))
+	ethereumService := globalCompositeService.GetServiceByType(reflect.TypeOf((*EthereumServiceImpl)(nil))).(*EthereumServiceImpl)
+	wrapper.PubKey.X = ethereumService.GetSelfPublicKey().X
+	wrapper.PubKey.Y = ethereumService.GetSelfPublicKey().Y
 
 	bftRaw, err := json.Marshal(bftTx)
 	if err != nil {
@@ -49,8 +72,13 @@ func (wrapper *DefaultBFTTxWrapper) PrepareBFTTx(bftTx interface{}) ([]byte, err
 	}
 	wrapper.BFTTx = bftRaw
 
-	// Sign data by private key
-	wrapper.Signature = make([]byte, 0)
+	// Sign data by private key, sign DefaultBFTTxWrapper without signature
+	data := wrapper.GetSerializedBody()
+	signature, err := ethereumService.SelfSignData(data)
+	if err != nil {
+		return nil, err
+	}
+	wrapper.Signature = signature
 
 	// For example, you can marshal the struct to JSON:
 	txBytes, err := json.Marshal(wrapper)
@@ -64,7 +92,7 @@ func (wrapper *DefaultBFTTxWrapper) PrepareBFTTx(bftTx interface{}) ([]byte, err
 func (wrapper *DefaultBFTTxWrapper) DecodeBFTTx(txBytes []byte) error {
 	// Implement the logic to decode the BFT transaction
 	// For example, you can unmarshal the JSON into the struct:
-	err := json.Unmarshal(txBytes, wrapper)
+	err := json.Unmarshal(txBytes, &wrapper.BFTTx)
 	if err != nil {
 		return errors.New("could not decode BFT transaction")
 	}
@@ -72,9 +100,20 @@ func (wrapper *DefaultBFTTxWrapper) DecodeBFTTx(txBytes []byte) error {
 }
 
 func (wrapper DefaultBFTTxWrapper) GetSerializedBody() []byte {
-	// Implement the logic to get the serialized body of the BFT transaction
-	// For example, you can return the BFTTx field:
-	return wrapper.BFTTx
+	wrapper.Signature = nil
+	bin, err := json.Marshal(wrapper)
+	if err != nil {
+		logrus.Errorf("could not GetSerializedBody bfttx, %v", err)
+	}
+	return bin
+}
+
+func getType(myvar interface{}) string {
+	if t := reflect.TypeOf(myvar); t.Kind() == reflect.Ptr {
+		return t.Elem().Name()
+	} else {
+		return t.Name()
+	}
 }
 
 type BFTClient interface {

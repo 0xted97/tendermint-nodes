@@ -4,11 +4,13 @@ import (
 	"reflect"
 )
 
+// Global
+var globalCompositeService *CompositeService
+
 type Service interface {
 	Name() string
 	OnStart() error
 	OnStop() error
-	InjectServices() error
 }
 
 type CompositeService struct {
@@ -31,6 +33,7 @@ func (cs *CompositeService) OnStart() error {
 		}
 		cs.servicesByName[service.Name()] = service
 	}
+	globalCompositeService = cs
 	return nil
 }
 
