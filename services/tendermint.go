@@ -4,17 +4,22 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/me/dkg-node/config"
 	"github.com/sirupsen/logrus"
+	tmbtcec "github.com/tendermint/btcd/btcec"
 	tmconfig "github.com/tendermint/tendermint/config"
 	tmsecp "github.com/tendermint/tendermint/crypto/secp256k1"
 	tmlog "github.com/tendermint/tendermint/libs/log"
 	tmnode "github.com/tendermint/tendermint/node"
 	tmp2p "github.com/tendermint/tendermint/p2p"
+
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 type TendermintService struct {
@@ -73,14 +78,13 @@ func (t *TendermintService) OnStart() error {
 	}
 
 	// Get default tm base path for generation of nodekey
-	dftConfig := tmconfig.DefaultConfig()
+	defaultConfig := tmconfig.DefaultConfig()
 	tmRootPath := config.GlobalConfig.BasePath + "/tendermint"
-	dftConfig.SetRoot(tmRootPath)
-	tmNodeKey, err := tmp2p.LoadOrGenNodeKey(dftConfig.NodeKeyFile())
+	defaultConfig.SetRoot(tmRootPath)
+	tmNodeKey, err := tmp2p.LoadOrGenNodeKey(defaultConfig.NodeKeyFile())
 	if err != nil {
 		logrus.WithError(err).Fatal("NodeKey generation issue")
 	}
-	fmt.Printf("tmNodeKey: %v\n", tmNodeKey)
 	t.tmNodeKey = tmNodeKey
 	t.bftRPC = nil
 	t.bftNode = nil
@@ -111,27 +115,46 @@ func abciMonitor(t *TendermintService) {
 func startTendermintCore(t *TendermintService, buildPath string) {
 	defaultTmConfig := tmconfig.DefaultConfig()
 	defaultTmConfig.SetRoot(buildPath)
+	// TODO: It will move to smart contract, config.NodeList
+	nodeWhitelist := *config.NodeList
+	// Genesis file
+	// Set validators from epoch is get from whitelist smart contract
+	genDoc := tmtypes.GenesisDoc{
+		ChainID:     "main-chain",
+		GenesisTime: time.Unix(1578036594, 0),
+	}
+	var validators []tmtypes.GenesisValidator
+	var persistantPeersList []string
+	for i := range nodeWhitelist {
+		//convert pubkey X and Y to tmpubkey
+		// pub := ecdsa.PrivateKey
+		pubkeyBytes := RawPointToTMPubKey(temp.PublicKey.X, temp.PublicKey.Y)
+		validators = append(validators, tmtypes.GenesisValidator{
+			Address: pubkeyBytes.Address(),
+			PubKey:  pubkeyBytes,
+			Power:   1,
+			Name:    "",
+		})
+		fmt.Printf("i: %v\n", i)
+	}
+	fmt.Printf("validators: %v\n", validators)
+	genDoc.Validators = validators
+	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
+	if err := genDoc.SaveAs(defaultTmConfig.GenesisFile()); err != nil {
+		logrus.WithError(err).Error("could not save as genesis file")
+	}
+
+	// Other config
 	defaultTmConfig.ProxyApp = config.GlobalConfig.ABCIServer
-	defaultTmConfig.Consensus.CreateEmptyBlocks = false
-	defaultTmConfig.BaseConfig.DBBackend = "badgerdb"
+	defaultTmConfig.Consensus.CreateEmptyBlocks = false // not allow empty block (no transactions)
+	defaultTmConfig.BaseConfig.DBBackend = "goleveldb"
 	defaultTmConfig.FastSyncMode = false
 	defaultTmConfig.RPC.ListenAddress = config.GlobalConfig.BftUri
-
-	// pvEth := t.ethereumService.GetSelfPrivateKey()
-	// pvF := tmprivval.NewFilePV(defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
-	// fmt.Printf("pvEth: %v\n", pvEth)
-	// pvF.Save()
-	// pv := tmprivval.LoadFilePV(
-	// 	defaultTmConfig.PrivValidatorKeyFile(),
-	// 	defaultTmConfig.PrivValidatorStateFile(),
-	// )
-
 	// Set logger, it should use logrus instead default log of tendermint
 	var logger tmlog.Logger
 	logger = tmlog.NewTMLogger(logrus.New().Out)
 
 	tmconfig.WriteConfigFile(defaultTmConfig.RootDir+"/config/config.toml", defaultTmConfig)
-
 	//Initial Tendermint Node
 	n, err := tmnode.DefaultNewNode(defaultTmConfig, logger)
 
@@ -148,6 +171,17 @@ func startTendermintCore(t *TendermintService, buildPath string) {
 
 func convertPrivateKey(ethPrivateKey []byte) ([]byte, error) {
 	return tmsecp.GenPrivKeySecp256k1(ethPrivateKey), nil
+}
+
+func RawPointToTMPubKey(X, Y *big.Int) tmsecp.PubKey {
+	//convert pubkey X and Y to tmpubkey
+	var pubkeyBytes tmsecp.PubKey
+	pubkeyObject := tmbtcec.PublicKey{
+		X: X,
+		Y: Y,
+	}
+	copy(pubkeyBytes[:], pubkeyObject.SerializeCompressed())
+	return pubkeyBytes
 }
 
 func (s *TendermintService) OnStop() error {

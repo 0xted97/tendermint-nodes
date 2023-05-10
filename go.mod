@@ -11,6 +11,7 @@ require (
 	github.com/libp2p/go-libp2p v0.27.1
 	github.com/multiformats/go-multiaddr v0.9.0
 	github.com/sirupsen/logrus v1.9.0
+	github.com/tendermint/btcd v0.1.1
 	github.com/tendermint/tendermint v0.34.0
 )
 
