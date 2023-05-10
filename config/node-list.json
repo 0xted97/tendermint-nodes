@@ -2,7 +2,8 @@
   "nodes": [
     {
       "index": 0,
-      "ethAddress":"94bD9E312E33aB244970326Cf6173F3D9C3641d5",
+      "ethAddress": "94bD9E312E33aB244970326Cf6173F3D9C3641d5",
+      "ethPri": "21d7cb3f801dff3e8dc5c9530891b52761bdfa75e7f4671408fbe5bf8fd9d559",
       "p2pAddress": "/ip4/127.0.0.1/tcp/1080/p2p/16Uiu2HAm3CpmxLibUsAMEPny93k87NkwbzybBqNTnMGvKQnYbVYv",
 
       "power": 10
@@ -10,13 +11,17 @@
     {
       "index": 1,
       "ethAddress": "7455169114c3f39cE2db72ac4Ef3F7f0aA21dc01",
+      "ethPri": "927d007d3b41feca85df7bd73e7017c66e9a016ef0f1fa47c7daf51c839a0340",
+
       "p2pAddress": "/ip4/127.0.0.1/tcp/1081/p2p/16Uiu2HAm1g5DaYPHYCu4pHtWVU64iezRZsCvXaZNPecm79K7SQv6",
-      
+
       "power": 10
     },
     {
       "index": 2,
       "ethAddress": "ed72C82d55C6a4509723c778Dd56D4a5Ec9A5024",
+      "ethPri": "2f604477cc3a8c38c4b9a68c3a0ec28c197177e51c844a12282705a2d076ad4c",
+
       "p2pAddress": "/ip4/127.0.0.1/tcp/1082/p2p/16Uiu2HAm61C7ML24pX13pyuzbbtrxocETmcb9V5J8nc2m62vjHaY",
 
       "power": 10

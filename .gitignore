@@ -17,3 +17,4 @@ vendor/
 /config/*.local*.json
 
 /tmp/badge/*
+/tmp/tendermint/*

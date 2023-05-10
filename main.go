@@ -43,16 +43,17 @@ func main() {
 	config.NodeList = nodeList
 
 	// Initial service
+	ethereumService := services.NewEthereumService(ctx)
 	abciService := services.NewABCIService(ctx)
 	p2pService := services.NewP2PService(ctx)
 	keyGenService := services.NewKeyGenService(ctx)
 	verifierService := services.NewVerifierService(ctx)
-	ethereumService := services.NewEthereumService(ctx)
 	tendermintService := services.NewTendermintService(ctx)
 
-	compositeService := services.NewCompositeService(abciService, p2pService, keyGenService, verifierService, ethereumService, tendermintService)
+	compositeService := services.NewCompositeService(ethereumService, abciService, p2pService, keyGenService, verifierService, tendermintService)
+	services.GlobalCompositeService = compositeService
 	// Start all services
-	err = compositeService.OnStart()
+	err = services.GlobalCompositeService.OnStart()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to start composite service:%v", err)
 		os.Exit(1)

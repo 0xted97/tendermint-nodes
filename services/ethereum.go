@@ -11,14 +11,15 @@ import (
 	"github.com/me/dkg-node/config"
 )
 
-type EthereumService interface {
+type IEthereumService interface {
 	Service
 	GetSelfPrivateKey() *ecdsa.PrivateKey
 	GetSelfPublicKey() *ecdsa.PublicKey
 	SelfSignData(data []byte) ([]byte, error)
 }
 
-type EthereumServiceImpl struct {
+type EthereumService struct {
+	Service
 	ctx context.Context
 
 	NodePrivateKey *ecdsa.PrivateKey
@@ -28,13 +29,20 @@ type EthereumServiceImpl struct {
 	CurrentEpoch   int
 
 	EthCurve elliptic.Curve
+
+	EpochNodeRegister map[int]*NodeRegister // epoch => Node Register => NodeReferences
 }
 
-func NewEthereumService(ctx context.Context) *EthereumServiceImpl {
-	return &EthereumServiceImpl{}
+type NodeRegister struct {
+	AllConnected bool
+	NodeList     []*config.NodeDetail
 }
 
-func (es *EthereumServiceImpl) OnStart() error {
+func NewEthereumService(ctx context.Context) *EthereumService {
+	return &EthereumService{ctx: ctx}
+}
+
+func (es *EthereumService) OnStart() error {
 	// Get config
 	privateKeyECDSA, err := crypto.HexToECDSA(string(config.GlobalConfig.NodePrivateKey))
 	if err != nil {
@@ -50,24 +58,24 @@ func (es *EthereumServiceImpl) OnStart() error {
 	return nil
 }
 
-func (es *EthereumServiceImpl) OnStop() error {
+func (es *EthereumService) OnStop() error {
 	// Perform any cleanup or stop actions if necessary
 	return nil
 }
 
-func (es *EthereumServiceImpl) Name() string {
+func (es *EthereumService) Name() string {
 	return "ethereum"
 }
 
-func (es *EthereumServiceImpl) GetSelfPrivateKey() *ecdsa.PrivateKey {
+func (es *EthereumService) GetSelfPrivateKey() *ecdsa.PrivateKey {
 	return es.NodePrivateKey
 }
 
-func (es *EthereumServiceImpl) GetSelfPublicKey() *ecdsa.PublicKey {
+func (es *EthereumService) GetSelfPublicKey() *ecdsa.PublicKey {
 	return es.NodePublicKey
 }
 
-func (es *EthereumServiceImpl) SelfSignData(data []byte) ([]byte, error) {
+func (es *EthereumService) SelfSignData(data []byte) ([]byte, error) {
 	if es.NodePrivateKey == nil {
 		return nil, fmt.Errorf("private key not available")
 	}

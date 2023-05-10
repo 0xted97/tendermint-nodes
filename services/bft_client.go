@@ -60,7 +60,7 @@ func (wrapper *DefaultBFTTxWrapper) PrepareBFTTx(bftTx interface{}) ([]byte, err
 	wrapper.Nonce = uint32(nonce.Int64())
 	// Set public key this node, to the rest of node can verify signature
 
-	ethereumService := globalCompositeService.GetServiceByType(reflect.TypeOf((*EthereumServiceImpl)(nil))).(*EthereumServiceImpl)
+	ethereumService := GlobalCompositeService.GetServiceByType(reflect.TypeOf((*EthereumService)(nil))).(*EthereumService)
 	wrapper.PubKey.X = ethereumService.GetSelfPublicKey().X
 	wrapper.PubKey.Y = ethereumService.GetSelfPublicKey().Y
 

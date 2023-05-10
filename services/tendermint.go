@@ -126,16 +126,16 @@ func startTendermintCore(t *TendermintService, buildPath string) {
 	var validators []tmtypes.GenesisValidator
 	var persistantPeersList []string
 	for i := range nodeWhitelist {
-		//convert pubkey X and Y to tmpubkey
-		// pub := ecdsa.PrivateKey
-		pubkeyBytes := RawPointToTMPubKey(temp.PublicKey.X, temp.PublicKey.Y)
-		validators = append(validators, tmtypes.GenesisValidator{
-			Address: pubkeyBytes.Address(),
-			PubKey:  pubkeyBytes,
-			Power:   1,
-			Name:    "",
-		})
 		fmt.Printf("i: %v\n", i)
+		//convert pubkey X and Y to tmpubkey
+		// pub := ethereumService.GetSelfPublicKey()
+		// pubkeyBytes := RawPointToTMPubKey(pub.X, pub.Y)
+		// validators = append(validators, tmtypes.GenesisValidator{
+		// 	Address: pubkeyBytes.Address(),
+		// 	PubKey:  pubkeyBytes,
+		// 	Power:   1,
+		// 	Name:    "",
+		// })
 	}
 	fmt.Printf("validators: %v\n", validators)
 	genDoc.Validators = validators

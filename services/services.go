@@ -5,12 +5,21 @@ import (
 )
 
 // Global
-var globalCompositeService *CompositeService
+var GlobalCompositeService *CompositeService
 
 type Service interface {
 	Name() string
 	OnStart() error
 	OnStop() error
+}
+
+type Services struct {
+	ABCIService       *ABCIService
+	P2PService        *P2PService
+	KeyGenService     *KeyGenService
+	VerifierService   *VerifierService
+	EthereumService   *EthereumService
+	TendermintService *TendermintService
 }
 
 type CompositeService struct {
@@ -33,7 +42,6 @@ func (cs *CompositeService) OnStart() error {
 		}
 		cs.servicesByName[service.Name()] = service
 	}
-	globalCompositeService = cs
 	return nil
 }
 
