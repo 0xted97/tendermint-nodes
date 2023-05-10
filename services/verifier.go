@@ -11,24 +11,20 @@ type VerifierService struct {
 	ctx      context.Context
 }
 
-func NewVerifierService(ctx context.Context) *VerifierService {
-	return &VerifierService{
-		ctx: ctx,
-	}
-}
-
-func (v *VerifierService) Name() string {
-	return "auth"
-}
-
-func (v *VerifierService) OnStart() error {
+func NewVerifierService(services *Services) (*VerifierService, error) {
+	verifierService := &VerifierService{ctx: services.Ctx}
 	verifiers := []auth.Verifier{
 		auth.NewGoogleVerifier(),
 		auth.NewFacebookVerifier(),
 	}
 
-	v.verifier = auth.NewAuthService(verifiers)
-	return nil
+	verifierService.verifier = auth.NewAuthService(verifiers)
+	services.VerifierService = verifierService
+	return verifierService, nil
+}
+
+func (v *VerifierService) Name() string {
+	return "auth"
 }
 
 func (k *VerifierService) OnStop() error {

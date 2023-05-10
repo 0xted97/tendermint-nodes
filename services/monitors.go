@@ -7,7 +7,8 @@ import (
 	"github.com/me/dkg-node/config"
 )
 
-func NodeListMonitor(tickerChan <-chan time.Time, p2pService *P2PService, establishConnection chan bool) {
+func NodeListMonitor(tickerChan <-chan time.Time, services *Services, establishConnection chan bool) {
+	p2pService := services.P2PService
 	for range tickerChan {
 		nodeList := *config.NodeList
 		if len(nodeList) != config.GlobalConfig.NumberOfNodes {

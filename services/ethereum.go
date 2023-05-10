@@ -38,29 +38,21 @@ type NodeRegister struct {
 	NodeList     []*config.NodeDetail
 }
 
-func NewEthereumService(ctx context.Context) *EthereumService {
-	return &EthereumService{ctx: ctx}
-}
+func NewEthereumService(services *Services) (*EthereumService, error) {
+	ethereumService := &EthereumService{}
 
-func (es *EthereumService) OnStart() error {
-	// Get config
 	privateKeyECDSA, err := crypto.HexToECDSA(string(config.GlobalConfig.NodePrivateKey))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	es.NodePrivateKey = privateKeyECDSA
-	es.NodePublicKey = &privateKeyECDSA.PublicKey
-	es.NodeAddress = crypto.PubkeyToAddress(*es.NodePublicKey)
-	es.EthCurve = crypto.S256()
+	ethereumService.NodePrivateKey = privateKeyECDSA
+	ethereumService.NodePublicKey = &privateKeyECDSA.PublicKey
+	ethereumService.NodeAddress = crypto.PubkeyToAddress(*ethereumService.NodePublicKey)
+	ethereumService.EthCurve = crypto.S256()
 
-	es.NodeIndex = 0 // TODO: will be set after it has been registered
-
-	return nil
-}
-
-func (es *EthereumService) OnStop() error {
-	// Perform any cleanup or stop actions if necessary
-	return nil
+	ethereumService.NodeIndex = 0 // TODO: will be set after it has been registered
+	services.EthereumService = ethereumService
+	return ethereumService, nil
 }
 
 func (es *EthereumService) Name() string {

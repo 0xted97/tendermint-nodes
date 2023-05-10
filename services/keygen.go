@@ -23,24 +23,22 @@ type KeyGenService struct {
 
 	p2p     *P2PService
 	abciApp *ABCIApp
+	config  *config.Config
 }
 
-func NewKeyGenService(ctx context.Context) *KeyGenService {
-	return &KeyGenService{
-		ctx: ctx,
-		// p2p: p2p,
-		dkg: InitializeDKG(3, 2),
-	}
+func NewKeyGenService(services *Services) (*KeyGenService, error) {
+	keyGenService := &KeyGenService{ctx: services.Ctx, dkg: &DKG{3, 2}, config: services.ConfigService}
+	keyGenService.p2p = services.P2PService
+	keyGenService.abciApp = services.ABCIService.ABCIApp
+	keyGenService.Initialize()
+
+	services.KeyGenService = keyGenService
+
+	return keyGenService, nil
 }
 
 func (p *KeyGenService) Name() string {
 	return "keygen"
-}
-
-func (k *KeyGenService) InjectServices(p2p *P2PService, abciApp *ABCIApp) {
-	k.p2p = p2p
-	k.abciApp = abciApp
-	k.Initialize()
 }
 
 func (k *KeyGenService) Initialize() {
@@ -81,7 +79,7 @@ func (k *KeyGenService) handleDKGSendStream(stream network.Stream) {
 }
 
 func (k *KeyGenService) GenerateAndSendShares() error {
-	keysLength := config.GlobalConfig.KeysPerEpoch
+	keysLength := k.config.KeysPerEpoch
 	for si := 0; si < keysLength; si++ {
 		secret, publicKey, shares, _ := GenerateShares(k.dkg.n, k.dkg.t)
 		for i, peer := range k.p2p.peers {

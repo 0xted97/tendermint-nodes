@@ -110,12 +110,6 @@ type DKG struct {
 	t int
 }
 
-func InitializeDKG(n int, t int) *DKG {
-	return &DKG{
-		n: n,
-		t: t,
-	}
-}
 func TestPublicKey() error {
 	priv1, public1, _, _ := GenerateShares(3, 2)
 	priv2, public2, _, _ := GenerateShares(3, 2)

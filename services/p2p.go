@@ -23,42 +23,29 @@ type P2PService struct {
 	peersDetail []config.NodeDetail
 }
 
-func NewP2PService(ctx context.Context) *P2PService {
-	return &P2PService{ctx: ctx}
-}
-
-func (p *P2PService) Name() string {
-	return "p2p"
-}
-
-func (p *P2PService) OnStart() error {
-	// Random private key, will be modify after
-	// prvKey, _, err := crypto.GenerateSecp256k1Key(rand.Reader)
-	// if err != nil {
-	// 	return err
-	// }
-
-	ethPrivateKeyHex := config.GlobalConfig.NodePrivateKey
+func NewP2PService(services *Services) (*P2PService, error) {
+	p2pService := &P2PService{ctx: services.Ctx}
+	ethPrivateKeyHex := services.ConfigService.NodePrivateKey
 	ethPrivateKeyBytes, err := hex.DecodeString(ethPrivateKeyHex)
 	if err != nil {
-		return fmt.Errorf("failed to decode Ethereum private key: %w", err)
+		return nil, fmt.Errorf("failed to decode Ethereum private key: %w", err)
 	}
 
 	prvKey, err := crypto.UnmarshalSecp256k1PrivateKey(ethPrivateKeyBytes)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	h, err := libp2p.New(
-		libp2p.ListenAddrStrings(config.GlobalConfig.P2PAddress),
+		libp2p.ListenAddrStrings(services.ConfigService.P2PAddress),
 		libp2p.Identity(prvKey),
 		libp2p.DisableRelay(),
 	)
 
 	if err != nil {
-		return fmt.Errorf("failed to create p2p host: %w", err)
+		return nil, fmt.Errorf("failed to create p2p host: %w", err)
 	}
-	p.host = h
+	p2pService.host = h
 
 	// Print the host's PeerInfo in multiaddr format
 	fmt.Printf("P2P host started with ID %s and address %s\n", h.ID(), h.Addrs()[0])
@@ -67,12 +54,16 @@ func (p *P2PService) OnStart() error {
 	// 	return fmt.Errorf("failed to connect to peers: %w", err)
 	// }
 
-	return nil
+	services.P2PService = p2pService
+	return p2pService, nil
+}
+
+func (p *P2PService) Name() string {
+	return "p2p"
 }
 
 func (p *P2PService) ConnectToPeer(node config.NodeDetail) (config.NodeDetail, error) {
 	// Will get from smart contracts
-
 	peerAddr := node.P2PAddress
 	addr, err := multiaddr.NewMultiaddr(peerAddr)
 	if err != nil {

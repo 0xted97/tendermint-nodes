@@ -17,8 +17,22 @@ type ABCIService struct {
 	server  service.Service
 }
 
-func NewABCIService(ctx context.Context) *ABCIService {
-	return &ABCIService{ctx: ctx}
+func NewABCIService(services *Services) (*ABCIService, error) {
+	abciService := &ABCIService{}
+
+	abciService.ABCIApp, _ = abciService.NewABCIApp()
+	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
+
+	socketAddr := config.GlobalConfig.ABCIServer
+	server := abciserver.NewSocketServer(socketAddr, abciService.ABCIApp)
+	server.SetLogger(logger)
+	if err := server.Start(); err != nil {
+		fmt.Fprintf(os.Stderr, "error starting socket server: %v", err)
+		os.Exit(1)
+	}
+	abciService.server = server
+	services.ABCIService = abciService
+	return abciService, nil
 }
 
 func (a *ABCIService) Name() string {

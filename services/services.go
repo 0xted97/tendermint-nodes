@@ -1,7 +1,10 @@
 package services
 
 import (
+	"context"
 	"reflect"
+
+	"github.com/me/dkg-node/config"
 )
 
 // Global
@@ -14,6 +17,8 @@ type Service interface {
 }
 
 type Services struct {
+	Ctx               context.Context
+	ConfigService     *config.Config
 	ABCIService       *ABCIService
 	P2PService        *P2PService
 	KeyGenService     *KeyGenService

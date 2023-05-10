@@ -27,7 +27,6 @@ func init() {
 func main() {
 	flag.Parse()
 	ctx := context.Background()
-
 	// Load config
 	globalConfig, err := config.LoadConfig(path)
 	if err != nil {
@@ -41,26 +40,18 @@ func main() {
 	}
 	config.GlobalConfig = globalConfig
 	config.NodeList = nodeList
+	suite := services.Services{Ctx: ctx}
+	suite.ConfigService = globalConfig
 
 	// Initial service
-	ethereumService := services.NewEthereumService(ctx)
-	abciService := services.NewABCIService(ctx)
-	p2pService := services.NewP2PService(ctx)
-	keyGenService := services.NewKeyGenService(ctx)
-	verifierService := services.NewVerifierService(ctx)
-	tendermintService := services.NewTendermintService(ctx)
-
-	compositeService := services.NewCompositeService(ethereumService, abciService, p2pService, keyGenService, verifierService, tendermintService)
-	services.GlobalCompositeService = compositeService
-	// Start all services
-	err = services.GlobalCompositeService.OnStart()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to start composite service:%v", err)
-		os.Exit(1)
-	}
+	services.NewEthereumService(&suite)
+	services.NewABCIService(&suite)
+	services.NewP2PService(&suite)
+	services.NewKeyGenService(&suite)
+	services.NewVerifierService(&suite)
+	services.NewTendermintService(&suite)
 
 	// Inject services for service after start
-	keyGenService.InjectServices(p2pService, abciService.ABCIApp)
 
 	// Initialize all necessary channels
 	nodeListMonitorTicker := time.NewTicker(5 * time.Second)
@@ -68,9 +59,9 @@ func main() {
 	services.TestPublicKey()
 
 	go services.SetUpJRPCHandler()
-	go services.NodeListMonitor(nodeListMonitorTicker.C, p2pService, establishConnection)
+	go services.NodeListMonitor(nodeListMonitorTicker.C, &suite, establishConnection)
 	<-establishConnection
-	services.KeyGenStart(keyGenService)
+	services.KeyGenStart(suite.KeyGenService)
 	// Stop NodeList monitor ticker
 	nodeListMonitorTicker.Stop()
 
@@ -81,7 +72,6 @@ func main() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
 
-	err = compositeService.OnStop()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not stop composite service:%v", err)
 	}

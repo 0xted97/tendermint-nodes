@@ -24,7 +24,8 @@ import (
 
 type TendermintService struct {
 	ctx             context.Context
-	ethereumService EthereumService
+	config          *config.Config
+	ethereumService *EthereumService
 
 	tmNodeKey *tmp2p.NodeKey
 
@@ -32,44 +33,54 @@ type TendermintService struct {
 	bftRPC  *BFTClientService
 }
 
-func NewTendermintService(ctx context.Context) *TendermintService {
-	return &TendermintService{
-		ctx: ctx,
+func NewTendermintService(services *Services) (*TendermintService, error) {
+	tendermintService := &TendermintService{
+		ctx:             services.Ctx,
+		config:          services.ConfigService,
+		ethereumService: services.EthereumService,
 	}
+
+	services.TendermintService = tendermintService
+	err := tendermintService.Initialize()
+	if err != nil {
+		return nil, err
+	}
+	return tendermintService, nil
 }
 
 func (t *TendermintService) Name() string {
 	return "tendermint"
 }
 
-func (t *TendermintService) OnStart() error {
+func (t *TendermintService) Initialize() error {
+	config := t.config
 	// mkdir folders for tendermint
-	err := os.MkdirAll(config.GlobalConfig.BasePath+"/tendermint", os.ModePerm)
+	err := os.MkdirAll(config.BasePath+"/tendermint", os.ModePerm)
 	if err != nil {
 		logrus.WithError(err).Error("could not makedir for tendermint")
 	}
-	err = os.MkdirAll(config.GlobalConfig.BasePath+"/tendermint/config", os.ModePerm)
+	err = os.MkdirAll(config.BasePath+"/tendermint/config", os.ModePerm)
 	if err != nil {
 		logrus.WithError(err).Error("could not makedir for tendermint/config")
 	}
-	err = os.MkdirAll(config.GlobalConfig.BasePath+"/tendermint/data", os.ModePerm)
+	err = os.MkdirAll(config.BasePath+"/tendermint/data", os.ModePerm)
 	if err != nil {
 		logrus.WithError(err).Error(("could not makedir for tendermint/data"))
 	}
-	err = os.Remove(config.GlobalConfig.BasePath + "/tendermint/data/cs.wal/wal")
+	err = os.Remove(config.BasePath + "/tendermint/data/cs.wal/wal")
 	if err != nil {
 		logrus.WithError(err).Error("could not remove write ahead log")
 	} else {
 		logrus.Debug("Removed write ahead log")
 	}
-	nodeKey, err := os.Open(config.GlobalConfig.BasePath + "/tendermint/config/node_key.json")
+	nodeKey, err := os.Open(config.BasePath + "/tendermint/config/node_key.json")
 	if err == nil {
 		bytVal, _ := ioutil.ReadAll(nodeKey)
 		logrus.WithField("NodeKey", string(bytVal)).Debug()
 	} else {
 		logrus.Debug("Could not find NodeKey")
 	}
-	privValidatorKey, err := os.Open(config.GlobalConfig.BasePath + "/tendermint/config/priv_validator_key.json")
+	privValidatorKey, err := os.Open(config.BasePath + "/tendermint/config/priv_validator_key.json")
 	if err == nil {
 		bytVal, _ := ioutil.ReadAll(privValidatorKey)
 		logrus.WithField("PrivValidatorKey", string(bytVal)).Debug()
@@ -79,7 +90,7 @@ func (t *TendermintService) OnStart() error {
 
 	// Get default tm base path for generation of nodekey
 	defaultConfig := tmconfig.DefaultConfig()
-	tmRootPath := config.GlobalConfig.BasePath + "/tendermint"
+	tmRootPath := config.BasePath + "/tendermint"
 	defaultConfig.SetRoot(tmRootPath)
 	tmNodeKey, err := tmp2p.LoadOrGenNodeKey(defaultConfig.NodeKeyFile())
 	if err != nil {
@@ -95,11 +106,12 @@ func (t *TendermintService) OnStart() error {
 }
 
 func abciMonitor(t *TendermintService) {
+	config := t.config
 	interval := time.NewTicker(5 * time.Second)
 	for range interval.C {
-		bftClient, _ := rpcclient.New(config.GlobalConfig.BftUri, "/websocket")
+		bftClient, _ := rpcclient.New(config.BftUri, "/websocket")
 		// for subscribe and unsubscribe method calls, use this
-		bftClientWS, _ := rpcclient.New(config.GlobalConfig.BftUri, "/websocket")
+		bftClientWS, _ := rpcclient.New(config.BftUri, "/websocket")
 		err := bftClientWS.Start()
 		if err != nil {
 			logrus.WithError(err).Error("could not start the bftWS")
@@ -113,6 +125,8 @@ func abciMonitor(t *TendermintService) {
 }
 
 func startTendermintCore(t *TendermintService, buildPath string) {
+	globalConfig := t.config
+
 	defaultTmConfig := tmconfig.DefaultConfig()
 	defaultTmConfig.SetRoot(buildPath)
 	// TODO: It will move to smart contract, config.NodeList
@@ -137,7 +151,6 @@ func startTendermintCore(t *TendermintService, buildPath string) {
 		// 	Name:    "",
 		// })
 	}
-	fmt.Printf("validators: %v\n", validators)
 	genDoc.Validators = validators
 	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
 	if err := genDoc.SaveAs(defaultTmConfig.GenesisFile()); err != nil {
@@ -145,11 +158,11 @@ func startTendermintCore(t *TendermintService, buildPath string) {
 	}
 
 	// Other config
-	defaultTmConfig.ProxyApp = config.GlobalConfig.ABCIServer
+	defaultTmConfig.ProxyApp = globalConfig.ABCIServer
 	defaultTmConfig.Consensus.CreateEmptyBlocks = false // not allow empty block (no transactions)
 	defaultTmConfig.BaseConfig.DBBackend = "goleveldb"
 	defaultTmConfig.FastSyncMode = false
-	defaultTmConfig.RPC.ListenAddress = config.GlobalConfig.BftUri
+	defaultTmConfig.RPC.ListenAddress = globalConfig.BftUri
 	// Set logger, it should use logrus instead default log of tendermint
 	var logger tmlog.Logger
 	logger = tmlog.NewTMLogger(logrus.New().Out)
