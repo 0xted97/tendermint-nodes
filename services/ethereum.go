@@ -5,9 +5,11 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"fmt"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/me/dkg-node/config"
 )
 
@@ -19,8 +21,8 @@ type IEthereumService interface {
 }
 
 type EthereumService struct {
-	Service
-	ctx context.Context
+	ctx    context.Context
+	config *config.Config
 
 	NodePrivateKey *ecdsa.PrivateKey
 	NodePublicKey  *ecdsa.PublicKey
@@ -33,13 +35,25 @@ type EthereumService struct {
 	EpochNodeRegister map[int]*NodeRegister // epoch => Node Register => NodeReferences
 }
 
+type NodeReference struct {
+	Address   *common.Address
+	Index     *big.Int
+	PeerID    peer.ID
+	PublicKey *ecdsa.PublicKey
+	// TMP2PConnection string
+	// P2PConnection   string
+	Self bool
+}
+
 type NodeRegister struct {
 	AllConnected bool
-	NodeList     []*config.NodeDetail
+	NodeList     []*NodeReference
 }
 
 func NewEthereumService(services *Services) (*EthereumService, error) {
-	ethereumService := &EthereumService{}
+	ethereumService := &EthereumService{
+		ctx: services.Ctx, config: services.ConfigService,
+	}
 
 	privateKeyECDSA, err := crypto.HexToECDSA(string(config.GlobalConfig.NodePrivateKey))
 	if err != nil {
@@ -50,7 +64,9 @@ func NewEthereumService(services *Services) (*EthereumService, error) {
 	ethereumService.NodeAddress = crypto.PubkeyToAddress(*ethereumService.NodePublicKey)
 	ethereumService.EthCurve = crypto.S256()
 
-	ethereumService.NodeIndex = 0 // TODO: will be set after it has been registered
+	ethereumService.EpochNodeRegister = make(map[int]*NodeRegister)
+	ethereumService.NodeIndex = 0    // TODO: will be set after it has been registered
+	ethereumService.CurrentEpoch = 0 // TODO: will be set after it has been registered
 	services.EthereumService = ethereumService
 	return ethereumService, nil
 }
@@ -78,4 +94,36 @@ func (es *EthereumService) SelfSignData(data []byte) ([]byte, error) {
 	}
 
 	return signature, nil
+}
+
+/*---------------------------------------- Interact contract function -----------------------------------*/
+// TODO
+func (es *EthereumService) NodeListInEpoch(epoch uint) ([]NodeReference, error) {
+	if epoch < 0 {
+		return nil, fmt.Errorf("invalid epoch")
+	}
+	// Return eth list in smart contract
+	return nil, nil
+}
+
+// TODO: Return eth list address in smart contract
+func (es *EthereumService) NodeWhitelist(epoch int) ([]common.Address, error) {
+	if epoch < 0 {
+		return nil, fmt.Errorf("invalid epoch")
+	}
+	var list []common.Address
+	for _, v := range *config.NodeList {
+		list = append(list, common.HexToAddress(v.EthAddress))
+	}
+	return list, nil
+}
+
+func (es *EthereumService) NodeDetail(nodeAddress common.Address) (config.NodeDetail, error) {
+	for _, v := range *config.NodeList {
+		if common.HexToAddress(v.EthAddress).Hex() == nodeAddress.Hex() {
+			return v, nil
+		}
+	}
+
+	return config.NodeDetail{}, fmt.Errorf("not found")
 }

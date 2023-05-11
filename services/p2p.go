@@ -2,10 +2,13 @@ package services
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"encoding/hex"
 	"fmt"
+	"math/big"
 	"strings"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/host"
@@ -16,15 +19,16 @@ import (
 )
 
 type P2PService struct {
-	ctx  context.Context
-	host host.Host
+	ctx             context.Context
+	ethereumService *EthereumService
+	host            host.Host
 
 	peers       []peer.AddrInfo
 	peersDetail []config.NodeDetail
 }
 
 func NewP2PService(services *Services) (*P2PService, error) {
-	p2pService := &P2PService{ctx: services.Ctx}
+	p2pService := &P2PService{ctx: services.Ctx, ethereumService: services.EthereumService}
 	ethPrivateKeyHex := services.ConfigService.NodePrivateKey
 	ethPrivateKeyBytes, err := hex.DecodeString(ethPrivateKeyHex)
 	if err != nil {
@@ -62,38 +66,59 @@ func (p *P2PService) Name() string {
 	return "p2p"
 }
 
-func (p *P2PService) ConnectToPeer(node config.NodeDetail) (config.NodeDetail, error) {
-	// Will get from smart contracts
+func (p *P2PService) ConnectToPeer(nodeAddress common.Address) (NodeReference, error) {
+	// TODO: get detail node by address from smart contracts
+	node, err := p.ethereumService.NodeDetail(nodeAddress)
+	if err != nil {
+		return NodeReference{}, err
+	}
+	nodeRef := NodeReference{
+		Address:   new(common.Address),
+		Index:     &big.Int{},
+		PeerID:    "",
+		PublicKey: &ecdsa.PublicKey{},
+		Self:      false,
+	}
 	peerAddr := node.P2PAddress
 	addr, err := multiaddr.NewMultiaddr(peerAddr)
 	if err != nil {
-		return config.NodeDetail{}, fmt.Errorf("invalid multiaddr: %w", err)
+		return NodeReference{}, fmt.Errorf("invalid multiaddr: %w", err)
 	}
 
 	addrInfo, err := peer.AddrInfoFromP2pAddr(addr)
 	if err != nil {
-		return config.NodeDetail{}, fmt.Errorf("failed to get AddrInfo: %w", err)
+		return NodeReference{}, fmt.Errorf("failed to get AddrInfo: %w", err)
+	}
+	*nodeRef.Address = common.HexToAddress(node.EthAddress)
+	*nodeRef.Index = *big.NewInt(int64(node.Index))
+	nodeRef.PeerID = addrInfo.ID
+	pub, _ := hexToECDSAPublicKey(node.EthPub)
+	nodeRef.PublicKey = &ecdsa.PublicKey{
+		Curve: p.ethereumService.EthCurve,
+		X:     pub.X,
+		Y:     pub.Y,
 	}
 	// check self address
 	if strings.ToLower(node.EthAddress) == strings.ToLower(config.GlobalConfig.EthAddress) {
 		p.peers = append(p.peers, *addrInfo)
-		node.Self = true
 		p.peersDetail = append(p.peersDetail, node)
-		return node, nil
-	}
 
-	err = p.host.Connect(p.ctx, *addrInfo)
-	if err != nil {
-		return config.NodeDetail{}, fmt.Errorf("failed to connect to peer: %w", err)
+		nodeRef.Self = true
+	} else {
+		err = p.host.Connect(p.ctx, *addrInfo)
+		if err != nil {
+			return NodeReference{}, fmt.Errorf("failed to connect to peer: %w", err)
+		}
+		// p.peer and p.connectedPeers are the same
+		p.peers = append(p.peers, *addrInfo)
+		p.peersDetail = append(p.peersDetail, node)
+
+		node.Self = false
 	}
-	// p.peer and p.connectedPeers are the same
-	node.Self = false
-	p.peers = append(p.peers, *addrInfo)
-	p.peersDetail = append(p.peersDetail, node)
 
 	fmt.Printf("Connected to peer %s\n", addrInfo.ID.Pretty())
 
-	return node, nil
+	return nodeRef, nil
 }
 
 func (p *P2PService) SendMessage(peerID peer.ID, protocolID protocol.ID, msg []byte) error {

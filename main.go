@@ -56,7 +56,7 @@ func main() {
 	// Initialize all necessary channels
 	nodeListMonitorTicker := time.NewTicker(5 * time.Second)
 	establishConnection := make(chan bool)
-	services.TestPublicKey()
+	// services.TestPublicKey()
 
 	go services.SetUpJRPCHandler()
 	go services.NodeListMonitor(nodeListMonitorTicker.C, &suite, establishConnection)

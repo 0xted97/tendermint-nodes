@@ -6,6 +6,8 @@ import (
 )
 
 var GlobalConfig *Config
+
+// Node List will be remove after build whitelist smart contract
 var NodeList *([]NodeDetail)
 
 type Config struct {
@@ -45,6 +47,7 @@ type NodeDetail struct {
 	Index      int    `json:"index" env:"INDEX"`
 	P2PAddress string `json:"p2pAddress" env:"P2P_ADDRESS"`
 	EthAddress string `json:"ethAddress" env:"ETH_ADDRESS"`
+	EthPub     string `json:"ethPub" env:"ETH_PUBLIC"`
 	Self       bool
 }
 

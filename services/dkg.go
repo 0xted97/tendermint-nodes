@@ -2,10 +2,12 @@ package services
 
 import (
 	"crypto/ecdsa"
+	"crypto/elliptic"
 	"errors"
 	"fmt"
 	"math/big"
 
+	"encoding/hex"
 	"encoding/json"
 
 	"github.com/ethereum/go-ethereum/crypto"
@@ -110,6 +112,27 @@ type DKG struct {
 	t int
 }
 
+func uintToECDSAPublicKey(pubKeyBytes []byte) (*ecdsa.PublicKey, error) {
+	pubKeyInt := new(big.Int).SetBytes(pubKeyBytes)
+	x, y := elliptic.Unmarshal(crypto.S256(), pubKeyInt.Bytes())
+	if x == nil || y == nil {
+		return nil, fmt.Errorf("invalid public key")
+	}
+	return &ecdsa.PublicKey{
+		Curve: crypto.S256(),
+		X:     x,
+		Y:     y,
+	}, nil
+}
+
+func hexToECDSAPublicKey(pubKeyHex string) (*ecdsa.PublicKey, error) {
+	pubKeyBytes, err := hex.DecodeString(pubKeyHex)
+	if err != nil {
+		return nil, fmt.Errorf("invalid public key hex string")
+	}
+	return uintToECDSAPublicKey(pubKeyBytes)
+}
+
 func TestPublicKey() error {
 	priv1, public1, _, _ := GenerateShares(3, 2)
 	priv2, public2, _, _ := GenerateShares(3, 2)
@@ -133,7 +156,10 @@ func TestPublicKey() error {
 	} else {
 		fmt.Println("Results are different.")
 	}
-
+	// Test convert public string -> ecdsa.Public
+	// pub1, _ := hexToECDSAPublicKey("047392e3f3781da4ff19f85483f15efbd81476c46cce0b02ae6e05975d39e3924b79a4c944245c25007a14d43b86178ef9814c2ec327a41ff9e34d8b6bc143c702")
+	// fmt.Printf("pub1.X: %v\n", pub1.X)
+	// fmt.Printf("pub1.Y: %v\n", pub1.Y)
 	return nil
 }
 

@@ -100,8 +100,8 @@ func (t *TendermintService) Initialize() error {
 	t.tmNodeKey = tmNodeKey
 	t.bftRPC = nil
 	t.bftNode = nil
-	go startTendermintCore(t, tmRootPath)
-	go abciMonitor(t)
+	// go startTendermintCore(t, tmRootPath)
+	// go abciMonitor(t)
 	// t.bftRPCWS = nil
 	return nil
 }
@@ -142,7 +142,7 @@ func startTendermintCore(t *TendermintService, buildPath string) {
 	pvF.Save()
 
 	// TODO: It will move to smart contract, config.NodeList
-	nodeWhitelist := *config.NodeList
+	nodeWhitelist, _ := t.ethereumService.NodeListInEpoch(0)
 	// Genesis file
 	// Set validators from epoch is get from whitelist smart contract
 	genDoc := tmtypes.GenesisDoc{
