@@ -2,16 +2,16 @@ package services
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"fmt"
 	"io/ioutil"
-	"math/big"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/me/dkg-node/config"
 	"github.com/sirupsen/logrus"
-	tmbtcec "github.com/tendermint/btcd/btcec"
 	tmconfig "github.com/tendermint/tendermint/config"
 	tmsecp "github.com/tendermint/tendermint/crypto/secp256k1"
 	tmlog "github.com/tendermint/tendermint/libs/log"
@@ -125,24 +125,18 @@ func abciMonitor(t *TendermintService) {
 	}
 }
 
-func startTendermintCore(t *TendermintService, buildPath string) {
+func StartTendermintCore(t *TendermintService, buildPath string) {
 	globalConfig := t.config
 
 	defaultTmConfig := tmconfig.DefaultConfig()
 	defaultTmConfig.SetRoot(buildPath)
 
-	var pv tmsecp.PrivKey
-	pv = make(tmsecp.PrivKey, 32)
-	for i := 0; i < 32; i++ {
-		pv[i] = t.ethereumService.NodePrivateKey.D.Bytes()[i]
-	}
-
-	// pvF := GenFilePVFromPrivKey(pv, defaultTmConfig.PrivValidatorKeyFile())
+	pv := tmsecp.GenPrivKeySecp256k1(t.ethereumService.NodePrivateKey.D.Bytes())
 	pvF := tmprivval.NewFilePV(pv, defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
 	pvF.Save()
 
 	// TODO: It will move to smart contract, config.NodeList
-	nodeWhitelist, _ := t.ethereumService.NodeListInEpoch(0)
+	nodeWhitelist, _ := t.ethereumService.NodeListInEpoch(t.ethereumService.CurrentEpoch)
 	// Genesis file
 	// Set validators from epoch is get from whitelist smart contract
 	genDoc := tmtypes.GenesisDoc{
@@ -151,19 +145,19 @@ func startTendermintCore(t *TendermintService, buildPath string) {
 	}
 	var validators []tmtypes.GenesisValidator
 	var persistantPeersList []string
-	for i := range nodeWhitelist {
-		fmt.Printf("i: %v\n", i)
+	for i, node := range nodeWhitelist {
 		//convert pubkey X and Y to tmpubkey
-		// pub := ethereumService.GetSelfPublicKey()
-		// pubkeyBytes := RawPointToTMPubKey(pub.X, pub.Y)
-		// validators = append(validators, tmtypes.GenesisValidator{
-		// 	Address: pubkeyBytes.Address(),
-		// 	PubKey:  pubkeyBytes,
-		// 	Power:   1,
-		// 	Name:    "",
-		// })
+		pubkeyBytes := RawPointToTMPubKey(node.PublicKey)
+		val := tmtypes.GenesisValidator{
+			Address: pubkeyBytes.Address(),
+			PubKey:  pubkeyBytes,
+			Power:   1,
+			Name:    "" + string(i),
+		}
+		validators = append(validators, val)
 	}
 	genDoc.Validators = validators
+
 	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
 	if err := genDoc.SaveAs(defaultTmConfig.GenesisFile()); err != nil {
 		logrus.WithError(err).Error("could not save as genesis file")
@@ -194,19 +188,10 @@ func startTendermintCore(t *TendermintService, buildPath string) {
 	t.bftNode.Start()
 }
 
-func convertPrivateKey(ethPrivateKey []byte) ([]byte, error) {
-	return tmsecp.GenPrivKeySecp256k1(ethPrivateKey), nil
-}
-
-func RawPointToTMPubKey(X, Y *big.Int) tmsecp.PubKey {
+func RawPointToTMPubKey(pubKey *ecdsa.PublicKey) tmsecp.PubKey {
 	//convert pubkey X and Y to tmpubkey
-	var pubkeyBytes tmsecp.PubKey
-	pubkeyObject := tmbtcec.PublicKey{
-		X: X,
-		Y: Y,
-	}
-	copy(pubkeyBytes[:], pubkeyObject.SerializeCompressed())
-	return pubkeyBytes
+	pubKeyBytes := elliptic.Marshal(pubKey.Curve, pubKey.X, pubKey.Y)
+	return pubKeyBytes[1:34]
 }
 
 func (s *TendermintService) OnStop() error {

@@ -59,6 +59,7 @@ func NewEthereumService(services *Services) (*EthereumService, error) {
 	if err != nil {
 		return nil, err
 	}
+	privateKeyECDSA.Curve = crypto.S256()
 	ethereumService.NodePrivateKey = privateKeyECDSA
 	ethereumService.NodePublicKey = &privateKeyECDSA.PublicKey
 	ethereumService.NodeAddress = crypto.PubkeyToAddress(*ethereumService.NodePublicKey)
@@ -98,12 +99,15 @@ func (es *EthereumService) SelfSignData(data []byte) ([]byte, error) {
 
 /*---------------------------------------- Interact contract function -----------------------------------*/
 // TODO
-func (es *EthereumService) NodeListInEpoch(epoch uint) ([]NodeReference, error) {
+func (es *EthereumService) NodeListInEpoch(epoch int) ([]*NodeReference, error) {
 	if epoch < 0 {
 		return nil, fmt.Errorf("invalid epoch")
 	}
+	if _, ok := es.EpochNodeRegister[epoch]; !ok {
+		return nil, fmt.Errorf("not found")
+	}
 	// Return eth list in smart contract
-	return nil, nil
+	return es.EpochNodeRegister[epoch].NodeList, nil
 }
 
 // TODO: Return eth list address in smart contract
