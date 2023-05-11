@@ -17,6 +17,7 @@ import (
 	tmlog "github.com/tendermint/tendermint/libs/log"
 	tmnode "github.com/tendermint/tendermint/node"
 	tmp2p "github.com/tendermint/tendermint/p2p"
+	tmprivval "github.com/tendermint/tendermint/privval"
 
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -129,6 +130,17 @@ func startTendermintCore(t *TendermintService, buildPath string) {
 
 	defaultTmConfig := tmconfig.DefaultConfig()
 	defaultTmConfig.SetRoot(buildPath)
+
+	var pv tmsecp.PrivKey
+	pv = make(tmsecp.PrivKey, 32)
+	for i := 0; i < 32; i++ {
+		pv[i] = t.ethereumService.NodePrivateKey.D.Bytes()[i]
+	}
+
+	// pvF := GenFilePVFromPrivKey(pv, defaultTmConfig.PrivValidatorKeyFile())
+	pvF := tmprivval.NewFilePV(pv, defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
+	pvF.Save()
+
 	// TODO: It will move to smart contract, config.NodeList
 	nodeWhitelist := *config.NodeList
 	// Genesis file
