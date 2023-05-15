@@ -107,7 +107,7 @@ func (t *TendermintService) Initialize() error {
 	return nil
 }
 
-func abciMonitor(t *TendermintService) {
+func AbciMonitor(t *TendermintService) {
 	config := t.config
 	interval := time.NewTicker(5 * time.Second)
 	for range interval.C {

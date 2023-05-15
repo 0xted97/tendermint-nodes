@@ -62,6 +62,7 @@ func main() {
 	go services.NodeListMonitor(nodeListMonitorTicker.C, &suite, establishConnection)
 	<-establishConnection
 	go services.StartTendermintCore(suite.TendermintService, suite.ConfigService.BasePath+"/tendermint")
+	go services.AbciMonitor(suite.TendermintService)
 	services.KeyGenStart(suite.KeyGenService)
 	// Stop NodeList monitor ticker
 	nodeListMonitorTicker.Stop()
