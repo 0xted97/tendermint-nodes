@@ -59,7 +59,6 @@ func NewEthereumService(services *Services) (*EthereumService, error) {
 	if err != nil {
 		return nil, err
 	}
-	privateKeyECDSA.Curve = crypto.S256()
 	ethereumService.NodePrivateKey = privateKeyECDSA
 	ethereumService.NodePublicKey = &privateKeyECDSA.PublicKey
 	ethereumService.NodeAddress = crypto.PubkeyToAddress(*ethereumService.NodePublicKey)

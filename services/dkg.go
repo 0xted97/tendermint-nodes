@@ -12,6 +12,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/shamir"
+	tmsecp "github.com/tendermint/tendermint/crypto/secp256k1"
 )
 
 type KeyGenMessage struct {
@@ -118,6 +119,7 @@ func uintToECDSAPublicKey(pubKeyBytes []byte) (*ecdsa.PublicKey, error) {
 	if x == nil || y == nil {
 		return nil, fmt.Errorf("invalid public key")
 	}
+
 	return &ecdsa.PublicKey{
 		Curve: crypto.S256(),
 		X:     x,
@@ -157,9 +159,13 @@ func TestPublicKey() error {
 		fmt.Println("Results are different.")
 	}
 	// Test convert public string -> ecdsa.Public
-	// pub1, _ := hexToECDSAPublicKey("047392e3f3781da4ff19f85483f15efbd81476c46cce0b02ae6e05975d39e3924b79a4c944245c25007a14d43b86178ef9814c2ec327a41ff9e34d8b6bc143c702")
-	// fmt.Printf("pub1.X: %v\n", pub1.X)
-	// fmt.Printf("pub1.Y: %v\n", pub1.Y)
+	pub1, _ := hexToECDSAPublicKey("047392e3f3781da4ff19f85483f15efbd81476c46cce0b02ae6e05975d39e3924b79a4c944245c25007a14d43b86178ef9814c2ec327a41ff9e34d8b6bc143c702")
+	fmt.Printf("pub1.X: %v\n", pub1.X)
+	fmt.Printf("pub1.Y: %v\n", pub1.Y)
+
+	privateKeyECDSA, err := crypto.HexToECDSA("21d7cb3f801dff3e8dc5c9530891b52761bdfa75e7f4671408fbe5bf8fd9d559")
+	pub2 := tmsecp.GenPrivKeySecp256k1(privateKeyECDSA.D.Bytes())
+	fmt.Printf("pub2.PubKey().Bytes(): %v\n", pub2.PubKey().Bytes())
 	return nil
 }
 

@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"crypto/ecdsa"
+	"crypto/elliptic"
 	"encoding/hex"
 	"fmt"
 	"math/big"
@@ -92,11 +93,13 @@ func (p *P2PService) ConnectToPeer(nodeAddress common.Address) (NodeReference, e
 	*nodeRef.Address = common.HexToAddress(node.EthAddress)
 	*nodeRef.Index = *big.NewInt(int64(node.Index))
 	nodeRef.PeerID = addrInfo.ID
-	pub, _ := hexToECDSAPublicKey(node.EthPub)
+	pubBytes, _ := hex.DecodeString(node.EthPub)
+
+	x, y := elliptic.Unmarshal(p.ethereumService.EthCurve, pubBytes)
 	nodeRef.PublicKey = &ecdsa.PublicKey{
 		Curve: p.ethereumService.EthCurve,
-		X:     pub.X,
-		Y:     pub.Y,
+		X:     x,
+		Y:     y,
 	}
 	// check self address
 	if strings.ToLower(node.EthAddress) == strings.ToLower(config.GlobalConfig.EthAddress) {

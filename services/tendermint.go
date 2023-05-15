@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"crypto/ecdsa"
-	"crypto/elliptic"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -12,7 +11,9 @@ import (
 
 	"github.com/me/dkg-node/config"
 	"github.com/sirupsen/logrus"
+	tmbtcec "github.com/tendermint/btcd/btcec"
 	tmconfig "github.com/tendermint/tendermint/config"
+	tmed25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	tmsecp "github.com/tendermint/tendermint/crypto/secp256k1"
 	tmlog "github.com/tendermint/tendermint/libs/log"
 	tmnode "github.com/tendermint/tendermint/node"
@@ -131,7 +132,15 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	defaultTmConfig := tmconfig.DefaultConfig()
 	defaultTmConfig.SetRoot(buildPath)
 
-	pv := tmsecp.GenPrivKeySecp256k1(t.ethereumService.NodePrivateKey.D.Bytes())
+	// pv := tmsecp.GenPrivKeySecp256k1(t.ethereumService.NodePrivateKey.D.Bytes())
+	// var pv tmsecp.PrivKey
+	// pv = make(tmsecp.PrivKey, 32)
+	// copy(pv[:], t.ethereumService.NodePrivateKey.D.Bytes())
+	// pvF := tmprivval.NewFilePV(pv, defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
+	// pvF.Save()
+
+	pv := tmed25519.GenPrivKeyFromSecret(t.ethereumService.NodePrivateKey.D.Bytes())
+	fmt.Printf("pv.PubKey(): %v\n", pv.PubKey())
 	pvF := tmprivval.NewFilePV(pv, defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
 	pvF.Save()
 
@@ -151,12 +160,13 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 		val := tmtypes.GenesisValidator{
 			Address: pubkeyBytes.Address(),
 			PubKey:  pubkeyBytes,
-			Power:   1,
+			Power:   10,
 			Name:    "" + string(i),
 		}
 		validators = append(validators, val)
 	}
 	genDoc.Validators = validators
+	genDoc.ConsensusParams = tmtypes.DefaultConsensusParams()
 
 	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
 	if err := genDoc.SaveAs(defaultTmConfig.GenesisFile()); err != nil {
@@ -176,7 +186,6 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	tmconfig.WriteConfigFile(defaultTmConfig.RootDir+"/config/config.toml", defaultTmConfig)
 	//Initial Tendermint Node
 	n, err := tmnode.DefaultNewNode(defaultTmConfig, logger)
-
 	if err != nil {
 		logrus.WithError(err).Fatal("failed to create tendermint node")
 	}
@@ -190,8 +199,17 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 
 func RawPointToTMPubKey(pubKey *ecdsa.PublicKey) tmsecp.PubKey {
 	//convert pubkey X and Y to tmpubkey
-	pubKeyBytes := elliptic.Marshal(pubKey.Curve, pubKey.X, pubKey.Y)
-	return pubKeyBytes[1:34]
+	// pubKeyBytes := elliptic.Marshal(pubKey.Curve, pubKey.X, pubKey.Y)
+	// pubKeyBytes[0] = 0x02
+	// return pubKeyBytes[0:33]
+	pubkeyBytes := make([]byte, 33)
+	pubkeyObject := tmbtcec.PublicKey{
+		Curve: pubKey.Curve,
+		X:     pubKey.X,
+		Y:     pubKey.Y,
+	}
+	copy(pubkeyBytes[:], pubkeyObject.SerializeCompressed())
+	return pubkeyBytes
 }
 
 func (s *TendermintService) OnStop() error {
