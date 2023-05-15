@@ -140,7 +140,6 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	// pvF.Save()
 
 	pv := tmed25519.GenPrivKeyFromSecret(t.ethereumService.NodePrivateKey.D.Bytes())
-	fmt.Printf("pv.PubKey(): %v\n", pv.PubKey())
 	pvF := tmprivval.NewFilePV(pv, defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
 	pvF.Save()
 
@@ -167,11 +166,12 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	}
 	genDoc.Validators = validators
 	genDoc.ConsensusParams = tmtypes.DefaultConsensusParams()
+	genDoc.ConsensusParams.Validator.PubKeyTypes = []string{tmtypes.ABCIPubKeyTypeEd25519, tmtypes.ABCIPubKeyTypeSecp256k1}
 
 	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
-	if err := genDoc.SaveAs(defaultTmConfig.GenesisFile()); err != nil {
-		logrus.WithError(err).Error("could not save as genesis file")
-	}
+	// if err := genDoc.SaveAs(defaultTmConfig.GenesisFile()); err != nil {
+	// 	logrus.WithError(err).Error("could not save as genesis file")
+	// }
 
 	// Other config
 	defaultTmConfig.ProxyApp = globalConfig.ABCIServer
@@ -194,7 +194,8 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	logrus.WithField("ListenAddress", defaultTmConfig.RPC.ListenAddress).Info("tendermint Node RPC listening")
 
 	//Start Tendermint Node
-	t.bftNode.Start()
+	err = t.bftNode.Start()
+	fmt.Printf("err: %v\n", err)
 }
 
 func RawPointToTMPubKey(pubKey *ecdsa.PublicKey) tmsecp.PubKey {
