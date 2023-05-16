@@ -13,6 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 	tmbtcec "github.com/tendermint/btcd/btcec"
 	tmconfig "github.com/tendermint/tendermint/config"
+
 	tmed25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	tmsecp "github.com/tendermint/tendermint/crypto/secp256k1"
 	tmlog "github.com/tendermint/tendermint/libs/log"
@@ -171,9 +172,9 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	genDoc.ConsensusParams = tmtypes.DefaultConsensusParams()
 	genDoc.ConsensusParams.Validator.PubKeyTypes = []string{tmtypes.ABCIPubKeyTypeEd25519, tmtypes.ABCIPubKeyTypeSecp256k1}
 
-	// if err := genDoc.SaveAs(defaultTmConfig.GenesisFile()); err != nil {
-	// 	logrus.WithError(err).Error("could not save as genesis file")
-	// }
+	if err := genDoc.SaveAs(defaultTmConfig.GenesisFile()); err != nil {
+		logrus.WithError(err).Error("could not save as genesis file")
+	}
 
 	// Other config
 	defaultTmConfig.ProxyApp = globalConfig.ABCIServer
@@ -181,8 +182,8 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	defaultTmConfig.BaseConfig.DBBackend = "goleveldb"
 	defaultTmConfig.FastSyncMode = false
 	defaultTmConfig.RPC.ListenAddress = globalConfig.BftUri
-	// defaultTmConfig.P2P.AddrBookStrict = false
-	// defaultTmConfig.P2P.ListenAddress = globalConfig.TMP2PAddress
+	defaultTmConfig.P2P.AddrBookStrict = false
+	defaultTmConfig.P2P.ListenAddress = globalConfig.TMP2PAddress
 	// Set logger, it should use logrus instead default log of tendermint
 	var logger tmlog.Logger
 	logger = tmlog.NewTMLogger(logrus.New().Out)

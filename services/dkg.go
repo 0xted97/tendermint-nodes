@@ -12,7 +12,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/shamir"
-	tmsecp "github.com/tendermint/tendermint/crypto/secp256k1"
+	tmed25519 "github.com/tendermint/tendermint/crypto/ed25519"
 )
 
 type KeyGenMessage struct {
@@ -164,8 +164,8 @@ func TestPublicKey() error {
 	fmt.Printf("pub1.Y: %v\n", pub1.Y)
 
 	privateKeyECDSA, err := crypto.HexToECDSA("21d7cb3f801dff3e8dc5c9530891b52761bdfa75e7f4671408fbe5bf8fd9d559")
-	pub2 := tmsecp.GenPrivKeySecp256k1(privateKeyECDSA.D.Bytes())
-	fmt.Printf("pub2.PubKey().Bytes(): %v\n", pub2.PubKey().Bytes())
+	pv := tmed25519.GenPrivKeyFromSecret(privateKeyECDSA.D.Bytes())
+	fmt.Printf("pv.PubKey().Address(): %v\n", pv.PubKey())
 	return nil
 }
 
