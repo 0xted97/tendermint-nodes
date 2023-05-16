@@ -164,7 +164,7 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 			Name:    "" + string(i),
 		}
 		validators = append(validators, val)
-		// persistantPeersList = append(persistantPeersList, node.TMP2PConnection)
+		persistantPeersList = append(persistantPeersList, node.TMP2PConnection)
 	}
 	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
 
