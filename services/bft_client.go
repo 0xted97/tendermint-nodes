@@ -124,8 +124,7 @@ type BFTClientService struct {
 	ctx    context.Context
 	client *tmclient.HTTP
 
-	compositeService *CompositeService
-	ethereumService  *EthereumService
+	ethereumService *EthereumService
 }
 
 func NewBFTClientService(ctx context.Context, client *tmclient.HTTP) *BFTClientService {
