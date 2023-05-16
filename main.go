@@ -12,6 +12,7 @@ import (
 	"github.com/me/dkg-node/config"
 	"github.com/me/dkg-node/services"
 	"github.com/sirupsen/logrus"
+	"github.com/tendermint/tendermint/p2p"
 )
 
 var path string
@@ -58,6 +59,12 @@ func main() {
 	establishConnection := make(chan bool)
 	services.TestPublicKey()
 
+	tmNodeKey, err := p2p.LoadOrGenNodeKey(suite.ConfigService.BasePath + "/tendermint/config/node_key.json")
+	if err != nil {
+		logrus.WithError(err).Errorf("Node Key generation issue")
+	}
+	// TODO: Add node.id + tmp2p address to smart contract
+	fmt.Printf("tmNodeKey.ID(): %v\n", tmNodeKey.ID())
 	go services.SetUpJRPCHandler()
 	go services.NodeListMonitor(nodeListMonitorTicker.C, &suite, establishConnection)
 	<-establishConnection

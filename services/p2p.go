@@ -93,6 +93,8 @@ func (p *P2PService) ConnectToPeer(nodeAddress common.Address) (NodeReference, e
 	*nodeRef.Address = common.HexToAddress(node.EthAddress)
 	*nodeRef.Index = *big.NewInt(int64(node.Index))
 	nodeRef.PeerID = addrInfo.ID
+	nodeRef.TMP2PConnection = node.TMP2PAddress
+	nodeRef.Power = node.Power
 	pubBytes, _ := hex.DecodeString(node.EthPub)
 
 	x, y := elliptic.Unmarshal(p.ethereumService.EthCurve, pubBytes)

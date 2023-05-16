@@ -159,16 +159,18 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 		val := tmtypes.GenesisValidator{
 			Address: pubkeyBytes.Address(),
 			PubKey:  pubkeyBytes,
-			Power:   10,
+			Power:   int64(node.Power),
 			Name:    "" + string(i),
 		}
 		validators = append(validators, val)
+		// persistantPeersList = append(persistantPeersList, node.TMP2PConnection)
 	}
+	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
+
 	genDoc.Validators = validators
 	genDoc.ConsensusParams = tmtypes.DefaultConsensusParams()
 	genDoc.ConsensusParams.Validator.PubKeyTypes = []string{tmtypes.ABCIPubKeyTypeEd25519, tmtypes.ABCIPubKeyTypeSecp256k1}
 
-	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
 	// if err := genDoc.SaveAs(defaultTmConfig.GenesisFile()); err != nil {
 	// 	logrus.WithError(err).Error("could not save as genesis file")
 	// }
@@ -179,6 +181,8 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	defaultTmConfig.BaseConfig.DBBackend = "goleveldb"
 	defaultTmConfig.FastSyncMode = false
 	defaultTmConfig.RPC.ListenAddress = globalConfig.BftUri
+	// defaultTmConfig.P2P.AddrBookStrict = false
+	// defaultTmConfig.P2P.ListenAddress = globalConfig.TMP2PAddress
 	// Set logger, it should use logrus instead default log of tendermint
 	var logger tmlog.Logger
 	logger = tmlog.NewTMLogger(logrus.New().Out)

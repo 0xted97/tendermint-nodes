@@ -36,11 +36,12 @@ type EthereumService struct {
 }
 
 type NodeReference struct {
-	Address   *common.Address
-	Index     *big.Int
-	PeerID    peer.ID
-	PublicKey *ecdsa.PublicKey
-	// TMP2PConnection string
+	Address         *common.Address
+	Index           *big.Int
+	PeerID          peer.ID
+	PublicKey       *ecdsa.PublicKey
+	TMP2PConnection string
+	Power           int64
 	// P2PConnection   string
 	Self bool
 }
