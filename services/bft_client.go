@@ -43,11 +43,10 @@ var bftTxs = map[string]byte{
 	// getType(dealer.Message{}):            byte(5),
 }
 
-func (wrapper *DefaultBFTTxWrapper) PrepareBFTTx(bftTx interface{}) ([]byte, error) {
+func (wrapper *DefaultBFTTxWrapper) PrepareBFTTx(bftTx interface{}, ethereumService *EthereumService) ([]byte, error) {
 	// Implement the logic to prepare the BFT transaction
 	// type byte
 	msgType, ok := bftTxs[getType(bftTx)]
-	fmt.Printf("msgType: %v\n", msgType)
 	if !ok {
 		return nil, fmt.Errorf("Msg type does not exist for BFT: %s ", getType(bftTx))
 	}
@@ -60,10 +59,8 @@ func (wrapper *DefaultBFTTxWrapper) PrepareBFTTx(bftTx interface{}) ([]byte, err
 	wrapper.Nonce = uint32(nonce.Int64())
 	// Set public key this node, to the rest of node can verify signature
 
-	ethereumService := GlobalCompositeService.GetServiceByType(reflect.TypeOf((*EthereumService)(nil))).(*EthereumService)
 	wrapper.PubKey.X = ethereumService.GetSelfPublicKey().X
 	wrapper.PubKey.Y = ethereumService.GetSelfPublicKey().Y
-
 	bftRaw, err := json.Marshal(bftTx)
 	if err != nil {
 		return nil, err
@@ -139,13 +136,23 @@ func (bcs *BFTClientService) Name() string {
 	return "bft_client"
 }
 
-func (bcs *BFTClientService) SendTransaction(tx []byte) error {
-	_, err := bcs.client.BroadcastTxSync(bcs.ctx, tx)
+func (bcs *BFTClientService) Broadcast(tx interface{}) ([]byte, error) {
+	var wrapper DefaultBFTTxWrapper
+	fmt.Printf("bcs.ethereumService: %v\n", bcs.ethereumService)
+	preparedTx, err := wrapper.PrepareBFTTx(tx, bcs.ethereumService)
 	if err != nil {
-		logrus.WithError(err).Error("Failed to send transaction")
-		return err
+		logrus.WithError(err).Error("Failed prepare BFT Tx")
+		return nil, err
 	}
-	return nil
+	// Broadcast
+	response, err := bcs.client.BroadcastTxSync(bcs.ctx, preparedTx)
+	if err != nil {
+		return nil, err
+	}
+	if response.Code != 0 {
+		return nil, fmt.Errorf("Could not broadcast, ErrorCode: %v", response.Code)
+	}
+	return response.Hash, nil
 }
 
 func (bcs *BFTClientService) Call(method string, params []interface{}) (interface{}, error) {

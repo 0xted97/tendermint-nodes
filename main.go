@@ -65,7 +65,7 @@ func main() {
 	}
 	// TODO: Add node.id + tmp2p address to smart contract
 	fmt.Printf("tmNodeKey.ID(): %v\n", tmNodeKey.ID())
-	go services.SetUpJRPCHandler()
+	go services.SetUpJRPCHandler(&suite)
 	go services.NodeListMonitor(nodeListMonitorTicker.C, &suite, establishConnection)
 	<-establishConnection
 	go services.StartTendermintCore(suite.TendermintService, suite.ConfigService.BasePath+"/tendermint")

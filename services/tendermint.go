@@ -41,12 +41,7 @@ func NewTendermintService(services *Services) (*TendermintService, error) {
 		ctx:             services.Ctx,
 		config:          services.ConfigService,
 		ethereumService: services.EthereumService,
-		bftRPC: &BFTClientService{
-			ctx:             services.Ctx,
-			ethereumService: services.EthereumService,
-		},
 	}
-
 	services.TendermintService = tendermintService
 	err := tendermintService.Initialize()
 	if err != nil {
@@ -123,8 +118,11 @@ func AbciMonitor(t *TendermintService) {
 		if err != nil {
 			logrus.WithError(err).Error("could not start the bftWS")
 		} else {
-			t.bftRPC = NewBFTClientService(t.ctx, bftClient)
-			fmt.Printf("t.bftRPC: %v\n", t.bftRPC)
+			t.bftRPC = &BFTClientService{
+				ctx:             t.ctx,
+				client:          bftClient,
+				ethereumService: t.ethereumService,
+			}
 			// t.bftRPCWS = bftClientWS
 			// t.bftRPCWSStatus = BftRPCWSStatusUp
 			break

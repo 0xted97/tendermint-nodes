@@ -12,3 +12,8 @@ const (
 	// ErrorCodeInternal is internal error code.
 	ErrorCodeInternal = -32603
 )
+
+const (
+	InternalError = "Internal error"
+	InputError    = "Input error"
+)

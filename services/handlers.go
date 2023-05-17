@@ -73,21 +73,30 @@ type (
 )
 
 type JRPCApi struct {
-	state string
+	state             string
+	ABCIService       *ABCIService
+	VerifierService   *VerifierService
+	EthereumService   *EthereumService
+	TendermintService *TendermintService
 }
 
 type CustomCodec struct {
 	*jsonrpc.Codec
 }
 
-func SetUpJRPCHandler() error {
+func SetUpJRPCHandler(services *Services) error {
 	httpPort := config.GlobalConfig.HttpServerPort
 	router := mux.NewRouter()
 	server := rpc.NewServer()
 	server.RegisterCodec(jsonrpc.NewCodec(), "application/json")
 	server.RegisterCodec(jsonrpc.NewCodec(), "application/json;charset=UTF-8")
 
-	jrpcApi := &JRPCApi{state: "Test ne"}
+	jrpcApi := &JRPCApi{
+		ABCIService:       services.ABCIService,
+		VerifierService:   services.VerifierService,
+		EthereumService:   services.EthereumService,
+		TendermintService: services.TendermintService,
+	}
 	server.RegisterService(jrpcApi, "")
 
 	router.Handle("/jrpc", server)

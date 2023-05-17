@@ -12,6 +12,7 @@ import (
 	"github.com/dgraph-io/badger"
 	"github.com/me/dkg-node/config"
 	utils "github.com/me/dkg-node/utils"
+	abcicode "github.com/tendermint/tendermint/abci/example/code"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/version"
 )
@@ -138,16 +139,16 @@ func (app *ABCIApp) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.Response
 }
 
 func (app *ABCIApp) CheckTx(req abcitypes.RequestCheckTx) abcitypes.ResponseCheckTx {
-	code := app.isValid(req.Tx)
-	if code != 0 {
-		return abcitypes.ResponseCheckTx{
-			Code: code,
-			Log:  "transaction is invalid",
-		}
-	}
+	// code := app.isValid(req.Tx)
+	// if code != 0 {
+	// 	return abcitypes.ResponseCheckTx{
+	// 		Code: code,
+	// 		Log:  "transaction is invalid",
+	// 	}
+	// }
 	// If the transaction is valid, return a success response
 	return abcitypes.ResponseCheckTx{
-		Code: code,
+		Code: abcicode.CodeTypeOK,
 		Log:  "transaction is valid",
 	}
 }

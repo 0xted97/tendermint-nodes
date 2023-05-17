@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/me/dkg-node/config"
+	"golang.org/x/crypto/sha3"
 )
 
 type IEthereumService interface {
@@ -89,7 +90,11 @@ func (es *EthereumService) SelfSignData(data []byte) ([]byte, error) {
 		return nil, fmt.Errorf("private key not available")
 	}
 
-	signature, err := crypto.Sign(data, es.NodePrivateKey)
+	hasher := sha3.NewLegacyKeccak256()
+	hasher.Write([]byte(data))
+	hash := hasher.Sum(nil)
+
+	signature, err := crypto.Sign(hash, es.NodePrivateKey)
 	if err != nil {
 		return nil, fmt.Errorf("could not sign data: %v", err)
 	}
