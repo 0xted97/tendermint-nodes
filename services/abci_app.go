@@ -164,8 +164,6 @@ func (app *ABCIApp) Commit() abcitypes.ResponseCommit {
 }
 
 func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.ResponseQuery) {
-	fmt.Printf("Query Path: %v\n", reqQuery.Path)
-	fmt.Printf("Query Data: %v\n", reqQuery.Data)
 	switch reqQuery.Path {
 	case "KeyAssignment":
 		index := string(reqQuery.Data)
