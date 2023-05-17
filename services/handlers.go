@@ -27,8 +27,8 @@ type (
 	}
 
 	AssignResponse struct {
-		Status bool `json:"status"`
-		Total  int  `json:"total"`
+		Index int    `json:"total"`
+		Key   []byte `json:"key"`
 	}
 
 	LookupRequest struct {

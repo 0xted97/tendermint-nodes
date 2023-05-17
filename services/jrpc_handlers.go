@@ -31,7 +31,13 @@ func (s *JRPCApi) Assign(r *http.Request, args *AssignRequest, result *AssignRes
 		return &jsonrpc.Error{Code: jsonrpc.ErrorCodeInternal, Message: jsonrpc.InternalError, Data: "Unable to broadcast: " + err.Error()}
 	}
 	logrus.Debugf("BFTWS:, hashstring %v", hash)
-
+	// Query
+	res, err := tendermintService.bftRPC.client.ABCIQuery(tendermintService.ctx, "GetReceiveShares", []byte("1"))
+	if err != nil {
+		return &jsonrpc.Error{Code: jsonrpc.ErrorCodeInternal, Message: jsonrpc.InternalError, Data: "Failed to check if email exists after assignment: " + err.Error()}
+	}
+	result.Key = res.Response.Value
+	fmt.Printf("res: %v\n", res)
 	return nil
 }
 

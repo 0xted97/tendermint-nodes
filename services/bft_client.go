@@ -138,7 +138,6 @@ func (bcs *BFTClientService) Name() string {
 
 func (bcs *BFTClientService) Broadcast(tx interface{}) ([]byte, error) {
 	var wrapper DefaultBFTTxWrapper
-	fmt.Printf("bcs.ethereumService: %v\n", bcs.ethereumService)
 	preparedTx, err := wrapper.PrepareBFTTx(tx, bcs.ethereumService)
 	if err != nil {
 		logrus.WithError(err).Error("Failed prepare BFT Tx")
@@ -153,9 +152,4 @@ func (bcs *BFTClientService) Broadcast(tx interface{}) ([]byte, error) {
 		return nil, fmt.Errorf("Could not broadcast, ErrorCode: %v", response.Code)
 	}
 	return response.Hash, nil
-}
-
-func (bcs *BFTClientService) Call(method string, params []interface{}) (interface{}, error) {
-	// Add code to make a call to the BFT client using the specified method and parameters.
-	return nil, errors.New("Not implemented")
 }
