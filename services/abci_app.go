@@ -21,9 +21,9 @@ var (
 	stateKey = []byte("stateKey")
 )
 
-type VerifyPair struct {
-	Verifier   string `json:"verifier"`
-	VerifierID string `json:"verifierID"`
+type GetIndexesRequest struct {
+	Verifier   string
+	VerifierID string
 }
 
 type Point struct {
@@ -184,15 +184,17 @@ func (app *ABCIApp) Query(reqQuery abcitypes.RequestQuery) (resQuery abcitypes.R
 			resQuery.Log = "invalid index"
 		}
 		break
-	case "GetIndexesFromVerifierID":
-		queryStr := string(reqQuery.Data)
-		queryParams, err := url.ParseQuery(queryStr)
-		verifier := queryParams.Get("verifier")
-		verifierID := queryParams.Get("verifierID")
+	case "GetIndexes":
+		// API
+		var queryData GetIndexesRequest
+		err := json.Unmarshal(reqQuery.Data, &queryData)
 		if err != nil {
 			resQuery.Code = 1
 			resQuery.Log = fmt.Sprintf("error unmarshalling query: %v", err)
+			return
 		}
+		verifier := queryData.Verifier
+		verifierID := queryData.VerifierID
 		keyIndex := app.getKeyIndex(verifierID, verifier)
 		if keyIndex < 0 {
 			resQuery.Code = 1

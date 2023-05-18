@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -32,7 +33,8 @@ func (s *JRPCApi) Assign(r *http.Request, args *AssignRequest, result *AssignRes
 	}
 	logrus.Debugf("BFTWS:, hashstring %v", hash)
 	// Query
-	res, err := tendermintService.bftRPC.client.ABCIQuery(tendermintService.ctx, "GetIndexesFromVerifierID", []byte("1"))
+	queryData, _ := json.Marshal(assMsg)
+	res, err := tendermintService.bftRPC.client.ABCIQuery(tendermintService.ctx, "GetIndexes", []byte(queryData))
 	if err != nil {
 		return &jsonrpc.Error{Code: jsonrpc.ErrorCodeInternal, Message: jsonrpc.InternalError, Data: "Failed to check if email exists after assignment: " + err.Error()}
 	}
