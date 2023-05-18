@@ -44,7 +44,7 @@ func (p *KeyGenService) Name() string {
 func (k *KeyGenService) Initialize() {
 	k.p2p.host.SetStreamHandler(protocol.ID(dkgSendProtocolID), k.handleDKGSendStream)
 
-	// k.GenerateAndSendShares()
+	k.GenerateAndSendShares()
 }
 
 func (k *KeyGenService) OnStart() error {

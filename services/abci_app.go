@@ -116,6 +116,7 @@ func (app *ABCIApp) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.Response
 	correct, _, err := app.ValidateAndUpdateAndTagBFTTx(req.Tx)
 	if err != nil {
 		logrus.Errorf("Could not validate BFTTx %s", err)
+		return abcitypes.ResponseDeliverTx{Code: abcicode.CodeTypeUnauthorized, Log: err.Error()}
 	}
 	if !correct {
 		logrus.Debug("Tx is wrong or fake")

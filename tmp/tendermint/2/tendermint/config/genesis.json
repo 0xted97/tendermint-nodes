@@ -1,0 +1,54 @@
+{
+  "genesis_time": "2023-05-18T07:21:18Z",
+  "chain_id": "main-chain",
+  "initial_height": "0",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "22020096",
+      "max_gas": "-1",
+      "time_iota_ms": "1000"
+    },
+    "evidence": {
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000",
+      "max_bytes": "1048576"
+    },
+    "validator": {
+      "pub_key_types": [
+        "ed25519",
+        "secp256k1"
+      ]
+    },
+    "version": {}
+  },
+  "validators": [
+    {
+      "address": "E383FEB502D55E154DB45F33F4B6778C7E2B5AA3",
+      "pub_key": {
+        "type": "tendermint/PubKeySecp256k1",
+        "value": "AnOS4/N4HaT/GfhUg/Fe+9gUdsRszgsCrm4Fl10545JL"
+      },
+      "power": "10",
+      "name": ""
+    },
+    {
+      "address": "20D53B5A2291D5E7F919FA73658B1A24A8BD8526",
+      "pub_key": {
+        "type": "tendermint/PubKeySecp256k1",
+        "value": "AlzWhx7/CkxwnWRxTiy/9piSwYInWA9CIgdo2KMjE7rL"
+      },
+      "power": "10",
+      "name": ""
+    },
+    {
+      "address": "7B9FFF772D479C6E584BC01211BC292C6ECD678F",
+      "pub_key": {
+        "type": "tendermint/PubKeySecp256k1",
+        "value": "Ap0rGrqQW0SN1Tq0PMAIQ9LqnIQ30TB+G8Bg1V+TB8aZ"
+      },
+      "power": "10",
+      "name": ""
+    }
+  ],
+  "app_hash": ""
+}

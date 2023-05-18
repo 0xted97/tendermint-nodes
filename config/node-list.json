@@ -17,7 +17,7 @@
       "ethPri": "927d007d3b41feca85df7bd73e7017c66e9a016ef0f1fa47c7daf51c839a0340",
       "ethPub": "045cd6871eff0a4c709d64714e2cbff69892c18227580f42220768d8a32313bacba62789bf4a14d645436a5e8f3bd6bae1004a3d35e9ea27888144fc905884464e",
       "p2pAddress": "/ip4/127.0.0.1/tcp/1081/p2p/16Uiu2HAm1g5DaYPHYCu4pHtWVU64iezRZsCvXaZNPecm79K7SQv6",
-      "tmp2pAddress": "tcp://d94ca6b4dba3854c2c3700000144568ff9a4dd12@localhost:26660",
+      "tmp2pAddress": "tcp://aecbed0dda34ac7816c6bca4b31348196aedf8a5@localhost:26660",
       "power": 10
     },
     {
@@ -26,7 +26,7 @@
       "ethPri": "2f604477cc3a8c38c4b9a68c3a0ec28c197177e51c844a12282705a2d076ad4c",
       "ethPub": "049d2b1aba905b448dd53ab43cc00843d2ea9c8437d1307e1bc060d55f9307c6992b1a38bbba379715790186c02ee347d451d9be5d0c090a2721bf2ec35fbb97b2",
       "p2pAddress": "/ip4/127.0.0.1/tcp/1082/p2p/16Uiu2HAm61C7ML24pX13pyuzbbtrxocETmcb9V5J8nc2m62vjHaY",
-      "tmp2pAddress": "tcp://a4322aab08d60b80054d25159d3c441cf8fd7552@localhost:26662",
+      "tmp2pAddress": "tcp://41df60e8859f897592a8f37da3d89e339d024770@localhost:26662",
 
       "power": 10
     }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/me/dkg-node/config"
@@ -169,7 +170,7 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	}
 
 	// For multi-node, if one node is not necessary
-	// defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
+	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
 
 	genDoc.Validators = validators
 	genDoc.ConsensusParams = tmtypes.DefaultConsensusParams()
