@@ -145,9 +145,7 @@ func (bcs *BFTClientService) Broadcast(tx interface{}) ([]byte, error) {
 	}
 
 	// Broadcast
-	msg := append([]byte("mug00")[:], preparedTx[:]...)
-
-	response, err := bcs.client.BroadcastTxSync(bcs.ctx, msg)
+	response, err := bcs.client.BroadcastTxSync(bcs.ctx, preparedTx)
 	if err != nil {
 		return nil, err
 	}

@@ -112,8 +112,15 @@ func (ABCIApp) SetOption(req abcitypes.RequestSetOption) abcitypes.ResponseSetOp
 
 func (app *ABCIApp) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.ResponseDeliverTx {
 	fmt.Printf("DeliverTx: %v\n", req.Tx)
+	tx := req.GetTx()
+	// Parse headers and authenticate message from nodelist
+	parsedTx, err := authenticateBftTx(tx)
+	if err != nil {
+		return abcitypes.ResponseDeliverTx{Code: abcicode.CodeTypeUnauthorized}
+	}
+
 	//Validate transaction here
-	correct, _, err := app.ValidateAndUpdateAndTagBFTTx(req.Tx)
+	correct, _, err := app.ValidateAndUpdateAndTagBFTTx(parsedTx.BFTTx, parsedTx.MsgType)
 	if err != nil {
 		logrus.Errorf("Could not validate BFTTx %s", err)
 		return abcitypes.ResponseDeliverTx{Code: abcicode.CodeTypeUnauthorized, Log: err.Error()}
@@ -123,52 +130,46 @@ func (app *ABCIApp) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.Response
 		return abcitypes.ResponseDeliverTx{Code: abcicode.CodeTypeUnauthorized}
 	}
 
-	code := app.isValid(req.Tx)
-	if code != 0 {
-		return abcitypes.ResponseDeliverTx{Code: code}
-	}
-
-	// Full key
-	if app.state.LastUnassignedIndex >= app.state.LastCreatedIndex {
-		return abcitypes.ResponseDeliverTx{Code: 1, Log: "No more key assignments available"}
-	}
-	// Assign key
-	queryStr := string(req.Tx)
-	queryParams, err := url.ParseQuery(queryStr)
-	if err != nil {
-		return abcitypes.ResponseDeliverTx{Code: 1}
-	}
-	verifierID := queryParams.Get("verifierID")
-	verifier := queryParams.Get("verifier")
-	index := app.getKeyIndex(verifierID, verifier)
-	if index >= 0 {
-		return abcitypes.ResponseDeliverTx{Code: 1, Log: "Key already assigned to verifier"}
-	}
-	// Assign key to verifierID and verifier
-	app.state.NewKeyAssignments[app.state.LastUnassignedIndex].Verifiers[verifier] = verifierID
-	app.state.LastUnassignedIndex = app.state.LastUnassignedIndex + 1
+	// // Assign key
+	// queryStr := string(req.Tx)
+	// queryParams, err := url.ParseQuery(queryStr)
+	// if err != nil {
+	// 	return abcitypes.ResponseDeliverTx{Code: 1}
+	// }
+	// verifierID := queryParams.Get("verifierID")
+	// verifier := queryParams.Get("verifier")
+	// index := app.getKeyIndex(verifierID, verifier)
+	// if index >= 0 {
+	// 	return abcitypes.ResponseDeliverTx{Code: 1, Log: "Key already assigned to verifier"}
+	// }
+	// // Assign key to verifierID and verifier
+	// app.state.NewKeyAssignments[app.state.LastUnassignedIndex].Verifiers[verifier] = verifierID
+	// app.state.LastUnassignedIndex = app.state.LastUnassignedIndex + 1
 
 	return abcitypes.ResponseDeliverTx{Code: abcitypes.CodeTypeOK}
 }
 
 func (app *ABCIApp) CheckTx(req abcitypes.RequestCheckTx) abcitypes.ResponseCheckTx {
 	fmt.Printf("CheckTx: %v\n", len(req.Tx))
-	// code := app.isValid(req.Tx)
-	// if code != 0 {
-	// 	return abcitypes.ResponseCheckTx{
-	// 		Code: code,
-	// 		Log:  "transaction is invalid",
-	// 	}
-	// }
-	// If the transaction is valid, return a success response
-	return abcitypes.ResponseCheckTx{
-		Code: abcicode.CodeTypeOK,
-		Log:  "transaction is valid",
+	tx := req.GetTx()
+	// parse headers and authenticate message from nodelist
+	parsedTx, err := authenticateBftTx(tx)
+	if err != nil {
+		return abcitypes.ResponseCheckTx{Code: abcicode.CodeTypeUnauthorized}
 	}
+	correct, err := app.validateTx(parsedTx.BFTTx, parsedTx.MsgType)
+	if err != nil {
+		return abcitypes.ResponseCheckTx{Code: abcicode.CodeTypeUnauthorized, Log: err.Error()}
+	}
+	if !correct {
+		return abcitypes.ResponseCheckTx{Code: abcicode.CodeTypeUnauthorized}
+	}
+	// If the transaction is valid, return a success response
+	return abcitypes.ResponseCheckTx{Code: abcicode.CodeTypeOK}
 }
 
 func (app *ABCIApp) Commit() abcitypes.ResponseCommit {
-
+	fmt.Printf("Commit: ")
 	// Save state after assign new key success
 	// app.SaveState()
 
