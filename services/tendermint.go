@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/me/dkg-node/config"
@@ -14,7 +13,6 @@ import (
 	tmbtcec "github.com/tendermint/btcd/btcec"
 	tmconfig "github.com/tendermint/tendermint/config"
 
-	tmed25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	tmsecp "github.com/tendermint/tendermint/crypto/secp256k1"
 	tmlog "github.com/tendermint/tendermint/libs/log"
 	tmnode "github.com/tendermint/tendermint/node"
@@ -137,15 +135,15 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	defaultTmConfig.SetRoot(buildPath)
 
 	// pv := tmsecp.GenPrivKeySecp256k1(t.ethereumService.NodePrivateKey.D.Bytes())
-	// var pv tmsecp.PrivKey
-	// pv = make(tmsecp.PrivKey, 32)
-	// copy(pv[:], t.ethereumService.NodePrivateKey.D.Bytes())
-	// pvF := tmprivval.NewFilePV(pv, defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
-	// pvF.Save()
-
-	pv := tmed25519.GenPrivKeyFromSecret(t.ethereumService.NodePrivateKey.D.Bytes())
+	var pv tmsecp.PrivKey
+	pv = make(tmsecp.PrivKey, 32)
+	copy(pv[:], t.ethereumService.NodePrivateKey.D.Bytes())
 	pvF := tmprivval.NewFilePV(pv, defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
 	pvF.Save()
+
+	// pv := tmed25519.GenPrivKeyFromSecret(t.ethereumService.NodePrivateKey.D.Bytes())
+	// pvF := tmprivval.NewFilePV(pv, defaultTmConfig.PrivValidatorKeyFile(), defaultTmConfig.PrivValidatorStateFile())
+	// pvF.Save()
 
 	// TODO: It will move to smart contract, config.NodeList
 	nodeWhitelist, _ := t.ethereumService.NodeListInEpoch(t.ethereumService.CurrentEpoch)
@@ -153,23 +151,25 @@ func StartTendermintCore(t *TendermintService, buildPath string) {
 	// Set validators from epoch is get from whitelist smart contract
 	genDoc := tmtypes.GenesisDoc{
 		ChainID:     "main-chain",
-		GenesisTime: time.Unix(1578036594, 0),
+		GenesisTime: time.Unix(1684394478, 0),
 	}
 	var validators []tmtypes.GenesisValidator
 	var persistantPeersList []string
-	for i, node := range nodeWhitelist {
+	for _, node := range nodeWhitelist {
 		//convert pubkey X and Y to tmpubkey
 		pubkeyBytes := RawPointToTMPubKey(node.PublicKey)
 		val := tmtypes.GenesisValidator{
 			Address: pubkeyBytes.Address(),
 			PubKey:  pubkeyBytes,
 			Power:   int64(node.Power),
-			Name:    "" + string(i),
+			Name:    "",
 		}
 		validators = append(validators, val)
 		persistantPeersList = append(persistantPeersList, node.TMP2PConnection)
 	}
-	defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
+
+	// For multi-node, if one node is not necessary
+	// defaultTmConfig.P2P.PersistentPeers = strings.Join(persistantPeersList, ",")
 
 	genDoc.Validators = validators
 	genDoc.ConsensusParams = tmtypes.DefaultConsensusParams()
