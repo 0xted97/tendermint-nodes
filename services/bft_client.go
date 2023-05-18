@@ -143,8 +143,11 @@ func (bcs *BFTClientService) Broadcast(tx interface{}) ([]byte, error) {
 		logrus.WithError(err).Error("Failed prepare BFT Tx")
 		return nil, err
 	}
+
 	// Broadcast
-	response, err := bcs.client.BroadcastTxSync(bcs.ctx, preparedTx)
+	msg := append([]byte("mug00")[:], preparedTx[:]...)
+
+	response, err := bcs.client.BroadcastTxSync(bcs.ctx, msg)
 	if err != nil {
 		return nil, err
 	}

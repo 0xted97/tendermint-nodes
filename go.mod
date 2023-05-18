@@ -3,6 +3,7 @@ module github.com/me/dkg-node
 go 1.20
 
 require (
+	github.com/YZhenY/tendermint v3.0.2+incompatible
 	github.com/dgraph-io/badger v1.6.2
 	github.com/ethereum/go-ethereum v1.11.6
 	github.com/gorilla/mux v1.8.0
@@ -13,6 +14,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0
 	github.com/tendermint/btcd v0.1.1
 	github.com/tendermint/tendermint v0.34.24
+	golang.org/x/crypto v0.7.0
 )
 
 require (
@@ -137,7 +139,6 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/arch v0.0.0-20190927153633-4e8777c89be4 // indirect
-	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
 	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/net v0.8.0 // indirect

@@ -12,6 +12,7 @@ import (
 	"github.com/dgraph-io/badger"
 	"github.com/me/dkg-node/config"
 	utils "github.com/me/dkg-node/utils"
+	"github.com/sirupsen/logrus"
 	abcicode "github.com/tendermint/tendermint/abci/example/code"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/version"
@@ -111,6 +112,16 @@ func (ABCIApp) SetOption(req abcitypes.RequestSetOption) abcitypes.ResponseSetOp
 
 func (app *ABCIApp) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.ResponseDeliverTx {
 	fmt.Printf("DeliverTx: %v\n", req.Tx)
+	//Validate transaction here
+	correct, _, err := app.ValidateAndUpdateAndTagBFTTx(req.Tx)
+	if err != nil {
+		logrus.Errorf("Could not validate BFTTx %s", err)
+	}
+	if !correct {
+		logrus.Debug("Tx is wrong or fake")
+		return abcitypes.ResponseDeliverTx{Code: abcicode.CodeTypeUnauthorized}
+	}
+
 	code := app.isValid(req.Tx)
 	if code != 0 {
 		return abcitypes.ResponseDeliverTx{Code: code}
@@ -140,7 +151,7 @@ func (app *ABCIApp) DeliverTx(req abcitypes.RequestDeliverTx) abcitypes.Response
 }
 
 func (app *ABCIApp) CheckTx(req abcitypes.RequestCheckTx) abcitypes.ResponseCheckTx {
-	fmt.Printf("CheckTx: %v\n", req.Tx)
+	fmt.Printf("CheckTx: %v\n", len(req.Tx))
 	// code := app.isValid(req.Tx)
 	// if code != 0 {
 	// 	return abcitypes.ResponseCheckTx{
