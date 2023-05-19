@@ -30,7 +30,11 @@ func (app *ABCIApp) ValidateAndUpdateAndTagBFTTx(tx []byte, msgType byte) (bool,
 		if index >= 0 {
 			return false, &tags, errors.New("Key already assigned to verifier")
 		}
-		app.state.NewKeyAssignments[app.state.LastUnassignedIndex].Verifiers[verifier] = verifierID
+		newKey := KeyAssignmentPublic{
+			Verifiers: make(map[string]string),
+		}
+		newKey.Verifiers[verifier] = verifierID
+		app.state.NewKeyAssignments[app.state.LastUnassignedIndex] = newKey
 		app.state.LastUnassignedIndex = app.state.LastUnassignedIndex + 1
 
 	}

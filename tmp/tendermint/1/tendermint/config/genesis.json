@@ -30,24 +30,6 @@
       },
       "power": "10",
       "name": ""
-    },
-    {
-      "address": "20D53B5A2291D5E7F919FA73658B1A24A8BD8526",
-      "pub_key": {
-        "type": "tendermint/PubKeySecp256k1",
-        "value": "AlzWhx7/CkxwnWRxTiy/9piSwYInWA9CIgdo2KMjE7rL"
-      },
-      "power": "10",
-      "name": ""
-    },
-    {
-      "address": "7B9FFF772D479C6E584BC01211BC292C6ECD678F",
-      "pub_key": {
-        "type": "tendermint/PubKeySecp256k1",
-        "value": "Ap0rGrqQW0SN1Tq0PMAIQ9LqnIQ30TB+G8Bg1V+TB8aZ"
-      },
-      "power": "10",
-      "name": ""
     }
   ],
   "app_hash": ""
